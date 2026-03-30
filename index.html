@@ -1,0 +1,3719 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汽油辛烷值試驗 (CNS 12011:2025)</title>
+    <!-- 引入 Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Microsoft JhengHei', 'Noto Sans TC', sans-serif;
+            background-color: #f0f8ff;
+            background-image: radial-gradient(#e6e6fa 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        h1, h2, h3, h4, h5, .section-card h5, .header-title h2 {
+            font-family: 'Microsoft JhengHei', sans-serif;
+            font-weight: bold;
+        }
+
+        /* 登入頁面樣式 */
+        #login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #2c3e50, #4ca1af);
+            z-index: 9999;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .login-card {
+            background: white; padding: 40px; border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 400px;
+        }
+
+        .header-title {
+            background: linear-gradient(to right, #2c3e50, #4ca1af);
+            color: white;
+            padding: 15px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .version-info {
+            font-size: 0.9rem;
+            color: #ecf0f1;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        .nav-tabs .nav-link { 
+            color: #555; 
+            font-family: 'Microsoft JhengHei', sans-serif;
+            font-weight: bold; 
+            font-size: 1.2rem;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: #e8f5e9;
+            color: #198754;
+            border-bottom-color: #e8f5e9;
+        }
+        .tab-icon { margin-right: 6px; font-size: 1.1rem; vertical-align: text-bottom; }
+
+        .section-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-top: 4px solid #4ca1af;
+            position: relative;
+            resize: both; 
+            overflow: auto; 
+            min-height: 80px;
+            min-width: 300px;
+            transition: box-shadow 0.3s ease;
+        }
+        .section-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .collapse-toggle {
+            cursor: pointer;
+            user-select: none;
+            display: inline-flex;
+            align-items: center;
+            transition: color 0.2s ease;
+        }
+        .collapse-toggle:hover {
+            color: #0d6efd !important;
+        }
+        .collapse-icon {
+            transition: transform 0.3s ease;
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+        .collapse-toggle.collapsed .collapse-icon {
+            transform: rotate(-90deg);
+        }
+
+        .bg-lab-record { background-color: #e8f5e9; } 
+        .bg-method-c { background-color: #fff9c4 !important; } 
+        .bg-method-a { background-color: #ffe0b2 !important; } 
+        .bg-method-a2 { background-color: #ffccbc !important; } 
+        .bg-raw-block { background-color: #90caf9 !important; } 
+        .bg-report-a { background-color: #d1e7dd !important; } 
+        .bg-repeatability { background-color: #cce5ff !important; border-top: 4px solid #0d6efd; }
+        .bg-tsf { background-color: #E6E6FA !important; border-top: 4px solid #6f42c1; } 
+        .bg-print-area { background-color: #e0f7fa !important; border-top: 4px solid #00acc1; }
+        
+        .th-blue { background-color: #cff4fc !important; } 
+
+        .calc-display-green { background-color: #198754; color: white; text-align: center; font-weight: bold;}
+        .calc-display-yellow { background-color: #fff3cd; color: #000; text-align: right; }
+        
+        .correction-label { font-weight: bold; color: #333; }
+        .correction-value { font-weight: bold; color: red; font-size: 1.1rem; }
+
+        .lookup-box {
+            background-color: #d1e7dd;
+            border: 2px solid #198754;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .lookup-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: #0d6efd;
+            background: white;
+            border-radius: 5px;
+            display: inline-block;
+            width: 140px;
+        }
+        .control-btn { cursor: pointer; user-select: none; font-size: 1.5rem; margin: 0 8px; color: #2c3e50; }
+        .control-btn:hover { color: #0d6efd; }
+        .lookup-divider { border-left: 2px solid #198754; padding-left: 10px; }
+
+        .raw-data-block {
+            border: 2px solid #1565c0; 
+            border-radius: 5px;
+            padding: 5px;
+            margin-bottom: 10px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            page-break-inside: avoid;
+            background-color: #e3f2fd; 
+        }
+        .tsf-record-block {
+            border: 2px solid #6f42c1;
+            background-color: #f3e5f5; 
+        }
+
+        .raw-data-table { font-size: 0.7rem; }
+        .raw-data-table th, .raw-data-table td { padding: 2px 2px; vertical-align: middle; }
+        .input-mini { height: 20px; font-size: 0.7rem; padding: 0 2px; text-align: center; }
+        
+        .sample-name-input {
+            border: none; border-bottom: 1px solid #ccc; background: transparent;
+            font-weight: bold; color: #333; width: 120px; text-align: left; padding-left: 5px; font-size: 0.9rem;
+        }
+        .sample-name-input:focus { outline: none; border-bottom: 2px solid #0d6efd; }
+
+        .tsf-field {
+            height: 1cm !important;
+            width: 3cm !important;
+            font-size: 1rem;
+            text-align: center;
+            padding: 2px;
+        }
+
+        /* 查檢表 UI */
+        #checkTable th {
+            font-size: 1.2rem;
+            padding: 12px 8px;
+            text-align: center;
+            background-color: #f8f9fa;
+        }
+        #checkTable td {
+            font-size: 1.15rem; 
+            padding: 12px 10px; 
+            vertical-align: middle;
+        }
+        #checkTable input[type="text"] {
+            font-size: 1.1rem;
+            height: 40px; 
+        }
+        #checkTable input[type="radio"] {
+            transform: scale(1.5); 
+        }
+        .checklist-header {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #0d6efd;
+            background-color: #e3f2fd;
+        }
+
+        /* 標準文件 */
+        .standard-content h4 { 
+            color: #2c3e50; 
+            border-left: 5px solid #4ca1af; 
+            padding-left: 10px; 
+            margin-top: 25px; 
+            background-color: #f8f9fa; 
+            padding: 8px;
+            font-weight: bold;
+            border-radius: 0 5px 5px 0;
+        }
+        .standard-content h5 {
+            color: #198754;
+            font-weight: bold;
+            margin-top: 15px;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 5px;
+        }
+        .standard-content ul, .standard-content ol { padding-left: 20px; margin-bottom: 10px; }
+        .standard-content li { margin-bottom: 5px; line-height: 1.6; }
+        .standard-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.95rem; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .standard-table th, .standard-table td { border: 1px solid #dee2e6; padding: 10px; text-align: left; vertical-align: middle; }
+        .standard-table th { background-color: #e9ecef; text-align: center; font-weight: bold; color: #495057; }
+        .standard-table tr:nth-child(even) { background-color: #f8f9fa; }
+        .highlight-box { background-color: #fff3cd; border: 1px solid #ffecb5; padding: 10px; border-radius: 5px; margin: 10px 0; }
+
+        /* 列印容器樣式機制 */
+        #printContainer {
+            display: none;
+        }
+
+        /* 原生列印 CSS */
+        @media print {
+            body.print-mode > * {
+                display: none !important;
+            }
+            body.print-mode #printContainer {
+                display: block !important;
+                position: relative !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                margin: 0;
+                padding: 0;
+            }
+            @page {
+                size: A4 portrait;
+                margin: 10mm;
+            }
+            
+            .bg-lab-record, .bg-method-c, .bg-method-a, .bg-method-a2, .bg-raw-block, .bg-report-a, .bg-repeatability, .bg-tsf {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            #printContainer table {
+                page-break-inside: auto;
+            }
+            #printContainer tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+            #printContainer thead {
+                display: table-header-group;
+            }
+            #printContainer tfoot {
+                display: table-footer-group;
+            }
+            
+            .collapse:not(.show) {
+                display: block !important;
+            }
+            .section-card {
+                resize: none !important;
+                overflow: visible !important;
+                height: auto !important;
+            }
+            .collapse-icon {
+                display: none !important;
+            }
+        }
+        
+        .tsf-report-row {
+            background-color: #f3e5f5 !important;
+        }
+    </style>
+</head>
+<body>
+
+<!-- 登入頁面 (Home) -->
+<div id="login-overlay">
+    <div class="login-card text-center">
+        <h2 class="mb-4 text-primary"><i class="bi bi-shield-lock"></i> 系統登入</h2>
+        <div class="mb-3 text-start">
+            <label class="form-label">帳號</label>
+            <input type="text" id="loginUser" class="form-control" placeholder="輸入帳號">
+        </div>
+        <div class="mb-3 text-start">
+            <label class="form-label">密碼</label>
+            <div class="input-group">
+                <input type="password" id="loginPass" class="form-control" placeholder="輸入密碼">
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('loginPass')">
+                    <i class="bi bi-eye"></i>
+                </button>
+            </div>
+        </div>
+        <button class="btn btn-primary w-100 mb-3" onclick="attemptLogin()">登入</button>
+        <div id="loginError" class="text-danger small mb-3"></div>
+        
+        <div class="border-top pt-3 mt-3">
+            <small class="text-muted">預設管理員: admin / admin</small>
+        </div>
+    </div>
+</div>
+
+<!-- 主應用程式 (登入後顯示) -->
+<div class="container-fluid" id="app-content" style="display:none;">
+    <div class="header-title mb-3 d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="m-0"><i class="bi bi-speedometer2"></i> 汽油辛烷值試驗 (CNS 12011:2025)</h2>
+            <div class="version-info">Ver 11.8 (2026-03-27) | Designed By Su.KM | Updated for CNS 12011:2025</div>
+        </div>
+        <div class="text-end">
+            <span class="text-light me-2" id="currentUserDisplay"></span>
+            <button class="btn btn-sm btn-outline-light" onclick="logout()">登出</button>
+            <button class="btn btn-sm btn-warning ms-1" id="btnAdminPanel" onclick="openAdminPanel()" style="display:none;">管理員後台</button>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <ul class="nav nav-tabs mb-3 no-print" id="myTab" role="tablist">
+        <li class="nav-item">
+            <button class="nav-link active" id="test-tab" data-bs-toggle="tab" data-bs-target="#test" type="button">
+                <i class="bi bi-flask tab-icon"></i> 試驗紀錄
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="check-tab" data-bs-toggle="tab" data-bs-target="#checklist" type="button">
+                <i class="bi bi-clipboard-check tab-icon"></i> 設備查檢表
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="quiz-tab" data-bs-toggle="tab" data-bs-target="#quiz" type="button">
+                <i class="bi bi-patch-question tab-icon"></i> 學習測驗
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" id="doc-tab" data-bs-toggle="tab" data-bs-target="#doc" type="button">
+                <i class="bi bi-journal-text tab-icon"></i> 標準重點說明
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+        
+        <!-- 分頁 1: 試驗紀錄 -->
+        <div class="tab-pane fade show active" id="test" role="tabpanel">
+            <div class="row">
+                <!-- 左半部 -->
+                <div class="col-lg-4 mb-3">
+                    
+                    <!-- 環境 -->
+                    <div class="section-card bg-lab-record">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="m-0 collapse-toggle text-dark" data-bs-toggle="collapse" data-bs-target="#collapseEnv">
+                                <i class="bi bi-chevron-down collapse-icon"></i><i class="bi bi-clipboard-data"></i> 實驗室環境及引擎參數紀錄
+                            </h5>
+                            <!-- 按鈕區 -->
+                            <div class="d-flex gap-1 no-print flex-wrap justify-content-end">
+                                <button class="btn btn-sm btn-warning" onclick="event.stopPropagation(); triggerFileLoad()">
+                                    <i class="bi bi-folder2-open"></i> 開啟舊檔
+                                </button>
+                                <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); saveToJSONFile()">
+                                    <i class="bi bi-save"></i> 另存新檔
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); clearTestPage()">
+                                    <i class="bi bi-eraser"></i> 清除頁面
+                                </button>
+                            </div>
+                        </div>
+                        <div id="collapseEnv" class="collapse show">
+                            <div class="row g-2 align-items-center mb-2">
+                                <div class="col-auto"><label>試驗日期:</label></div>
+                                <div class="col"><input type="date" class="form-control form-control-sm" id="testDate"></div>
+                            </div>
+                            <div class="row g-2 align-items-center mb-2">
+                                <div class="col-auto"><label>操作者:</label></div>
+                                <div class="col"><input type="text" class="form-control form-control-sm" id="operatorName"></div>
+                            </div>
+                            <div class="row g-2 align-items-center mb-2">
+                                <div class="col-auto"><label class="fw-bold">試驗時實驗室大氣壓力(hPa or mbar):</label></div>
+                                <div class="col"><input type="number" class="form-control form-control-sm" id="atmPressureInput" placeholder="輸入 hPa" oninput="calcAtm()"></div>
+                            </div>
+                            <div class="row g-2 align-items-center mb-2">
+                                <div class="col-auto"><label>換算後(inHg):</label></div>
+                                <div class="col"><input type="text" class="form-control form-control-sm calc-display-green" id="atmInHg" readonly></div>
+                            </div>
+                            <div class="row g-2 align-items-center mb-2">
+                                <div class="col-auto"><label>試驗時未經補償時(依大氣壓力查表)之進氣溫度(IAT)(℉):</label></div>
+                                <div class="col"><input type="text" class="form-control form-control-sm calc-display-yellow" id="stdIAT" readonly></div>
+                            </div>
+                            <div class="row g-2 align-items-center mb-2">
+                                <div class="col-auto"><label>補償後進氣溫度(溫度計)(IAT)(℉):</label></div>
+                                <div class="col"><input type="number" class="form-control form-control-sm" id="compIAT" oninput="calcTempDiff()"></div>
+                            </div>
+                            <div class="row g-2 align-items-center mb-2">
+                                <div class="col-auto"><label>加熱刻度:</label></div>
+                                <div class="col"><input type="text" class="form-control form-control-sm" id="heatScale"></div>
+                            </div>
+                            <div class="row g-2 align-items-center mb-2">
+                                <div class="col-auto"><label>實際補償溫度 Δ(℉):</label></div>
+                                <div class="col"><input type="text" class="form-control form-control-sm" id="deltaTemp" readonly></div>
+                            </div>
+                            
+                            <div class="alert alert-secondary p-2 mt-2 mb-0 text-center" style="font-size: 0.9rem;">
+                                <span class="correction-label">修正值 CR / DIR: </span>
+                                <span id="correctionVals" class="correction-value">-- / --</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 查詢器 -->
+                    <div class="section-card" id="lookup-section">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="m-0 collapse-toggle text-dark" data-bs-toggle="collapse" data-bs-target="#collapseLookup">
+                                <i class="bi bi-chevron-down collapse-icon"></i><i class="bi bi-search"></i> ON-CR-DIR 查詢器
+                            </h5>
+                        </div>
+                        <div id="collapseLookup" class="collapse show">
+                            <div class="lookup-box mx-auto shadow-sm p-2">
+                                <div class="d-flex justify-content-center align-items-center mb-2">
+                                    <span class="control-btn" onclick="adjustON(-1.0)">⏪</span>
+                                    <span class="control-btn" onclick="adjustON(-0.1)">◀</span>
+                                    <span id="lookupON" class="lookup-value fs-4" style="width:100px;">95.0</span>
+                                    <span class="control-btn" onclick="adjustON(0.1)">▶</span>
+                                    <span class="control-btn" onclick="adjustON(1.0)">⏩</span>
+                                </div>
+                                <input type="range" class="form-range" min="70" max="100" step="0.1" id="onSlider" value="95.0" oninput="updateFromSlider(this.value)">
+                                <div class="row mt-3 text-start" style="font-size: 0.9rem;">
+                                    <div class="col-6">
+                                        <div class="mb-1 text-center">
+                                            <span class="text-primary fw-bold text-decoration-underline">標準大氣壓力</span><br>
+                                            CR: <span id="stdCR" class="fw-bold text-dark">--</span><br>
+                                            DIR: <span id="stdDIR" class="fw-bold text-dark">--</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6 lookup-divider">
+                                        <div class="mb-1 text-center">
+                                            <span class="text-danger fw-bold text-decoration-underline">經壓力補償後</span><br>
+                                            CR: <span id="compCR" class="fw-bold text-dark">--</span><br>
+                                            DIR: <span id="compDIR" class="fw-bold text-dark">--</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 方法C -->
+                    <div class="section-card bg-method-c" id="method-c-section">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="m-0 collapse-toggle text-dark" data-bs-toggle="collapse" data-bs-target="#collapseMethodC">
+                                <i class="bi bi-chevron-down collapse-icon"></i>方法 C (壓縮比法)
+                            </h5>
+                            <div class="no-print">
+                                <button class="btn btn-sm btn-secondary py-0" onclick="event.stopPropagation(); clearMethodCInputs()" style="font-size:0.7rem;">清除</button>
+                                <button class="btn btn-sm btn-warning py-0" onclick="event.stopPropagation(); renumberMethodC()" style="font-size:0.7rem;">重新編號</button>
+                                <button class="btn btn-sm btn-primary py-0" onclick="event.stopPropagation(); addMethodCRecord()">＋</button>
+                            </div>
+                        </div>
+                        <div id="collapseMethodC" class="collapse show">
+                            <div class="mb-1 small text-muted">依 KI=50 之 CR/DIR 回推</div>
+                            <div class="row g-1 mb-2">
+                                <div class="col-12"><input type="text" class="form-control form-control-sm" id="methodC_Sample" placeholder="樣品編號"></div>
+                                <div class="col-6"><input type="number" class="form-control form-control-sm" id="methodC_CR_Input" placeholder="KI50 CR" oninput="calcMethodC()"></div>
+                                <div class="col-6"><input type="number" class="form-control form-control-sm" id="methodC_DIR_Input" placeholder="KI50 DIR" step="0.001" oninput="calcMethodC()"></div>
+                            </div>
+                            <table class="table table-bordered table-sm text-center mb-1 bg-white" style="font-size: 0.8rem;">
+                                <thead><tr><th>項目</th><th>實測</th><th>標準</th><th>預估ON</th></tr></thead>
+                                <tbody>
+                                    <tr><td>CR</td><td id="val_C_CR_Lab">--</td><td id="val_C_CR_Std">--</td><td id="val_C_ON_CR" class="text-primary fw-bold">--</td></tr>
+                                    <tr><td>DIR</td><td id="val_C_DIR_Lab">--</td><td id="val_C_DIR_Std">--</td><td id="val_C_ON_DIR" class="text-primary fw-bold">--</td></tr>
+                                </tbody>
+                            </table>
+                            
+                            <div id="methodC_ReportArea" class="mt-2 border-top pt-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="small fw-bold">報告彙整</span>
+                                </div>
+                                <table class="table table-striped table-sm text-center mt-1 bg-white" id="methodC_Table" style="font-size: 0.75rem;">
+                                    <thead><tr><th>#</th><th>樣品</th><th>ON(CR)</th><th>ON(DIR)</th><th class="no-print">X</th></tr></thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右半部 -->
+                <div class="col-lg-8 mb-3">
+                    
+                    <!-- 報表列印區塊 -->
+                    <div class="section-card bg-print-area py-3 mb-3 no-print">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="m-0 collapse-toggle text-dark" data-bs-toggle="collapse" data-bs-target="#collapsePrint">
+                                <i class="bi bi-chevron-down collapse-icon"></i><i class="bi bi-printer-fill"></i> 報表列印區
+                            </h5>
+                        </div>
+                        <div id="collapsePrint" class="collapse show">
+                            <hr class="my-2">
+                            <div class="d-flex flex-wrap gap-2">
+                                <button class="btn btn-primary fw-bold shadow-sm" onclick="printRawDataHTML()">
+                                    <i class="bi bi-grid-1x2"></i> 列印試驗原始紀錄
+                                </button>
+                                <button class="btn btn-success fw-bold shadow-sm" onclick="printChecklistHTML()">
+                                    <i class="bi bi-ui-checks"></i> 設備查檢表列印
+                                </button>
+                                <button class="btn btn-danger fw-bold shadow-sm" onclick="printCombinedReportHTML()">
+                                    <i class="bi bi-file-earmark-text"></i> 報告附件1、2、3列印
+                                </button>
+                                <button class="btn btn-info fw-bold shadow-sm text-white" onclick="printAllReportsHTML()">
+                                    <i class="bi bi-printer"></i> 綜合試驗報告列印
+                                </button>
+                            </div>
+                            <div class="mt-2 small text-muted">
+                                * 點擊上述按鈕將呼叫系統列印介面，支援直接列印或另存 PDF。格式均已為 A4 紙張最佳化。
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TSF 試驗區塊 -->
+                    <div class="section-card bg-tsf py-2 mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="m-0 collapse-toggle text-dark" data-bs-toggle="collapse" data-bs-target="#collapseTSF">
+                                <i class="bi bi-chevron-down collapse-icon"></i><i class="bi bi-clipboard-data"></i> 1.查核燃料(TSF)試驗
+                            </h5>
+                            <button class="btn btn-sm btn-primary no-print" onclick="event.stopPropagation(); addTSFRecordBlock()">＋ 新增紀錄表單</button>
+                        </div>
+                        <div id="collapseTSF" class="collapse show">
+                            <hr class="my-2">
+                            <!-- 第一行：TSF(ON) 設定與 PRF L/H -->
+                            <div class="row g-2 align-items-center mb-2">
+                                <div class="col-auto fw-bold small text-nowrap">TSF(ON):</div>
+                                <div class="col-auto d-flex gap-1 align-items-center">
+                                    <button class="btn btn-sm btn-outline-secondary px-2" onclick="adjustTSF(-0.1)">-</button>
+                                    <input type="number" class="form-control tsf-field" id="tsfON" value="96.9" step="0.1" oninput="updateTSF_PRFs()">
+                                    <button class="btn btn-sm btn-outline-secondary px-2" onclick="adjustTSF(0.1)">+</button>
+                                </div>
+                                
+                                <div class="col-auto fw-bold small text-nowrap ms-4">PRF Low/High:</div>
+                                <div class="col-auto"><input type="text" class="form-control tsf-field text-center fw-bold" id="tsfPrfLow" readonly></div>
+                                <div class="col-auto">/</div>
+                                <div class="col-auto"><input type="text" class="form-control tsf-field text-center fw-bold" id="tsfPrfHigh" readonly></div>
+                            </div>
+
+                            <!-- 第二行：Spread/MR 輸入與 TSF 實驗/報告值 -->
+                            <div class="row g-2 align-items-center mb-3">
+                                <div class="col-auto fw-bold small text-nowrap">Spread | Meter Reading :</div>
+                                <div class="col-auto"><input type="number" class="form-control tsf-field" id="tsfSpread" placeholder="Spread"></div>
+                                <div class="col-auto">/</div>
+                                <div class="col-auto"><input type="number" class="form-control tsf-field" id="tsfMR" placeholder="MR"></div>
+
+                                <div class="col-auto fw-bold small text-nowrap ms-4">TSF(實驗|報告):</div>
+                                <div class="col-auto"><input type="text" class="form-control tsf-field fw-bold text-primary" id="tsfExpVal" placeholder="實驗" readonly></div>
+                                <div class="col-auto">|</div>
+                                <div class="col-auto"><input type="text" class="form-control tsf-field fw-bold text-success" id="tsfRepVal" placeholder="報告" readonly></div>
+                            </div>
+
+                            <!-- TSF 紀錄方塊容器 -->
+                            <div id="tsfRecordContainer" class="row"></div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end mb-2 no-print">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="toggleMethodA2()">顯示/隱藏 方法 A 擴充區塊 (設定-2 / 紀錄-2)</button>
+                    </div>
+
+                    <!-- 方法A 設定 -->
+                    <div class="section-card bg-method-a py-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="m-0 collapse-toggle text-dark" data-bs-toggle="collapse" data-bs-target="#collapseMethodASetup">
+                                <i class="bi bi-chevron-down collapse-icon"></i>方法 A (涵括法 Bracketing) 設定
+                            </h5>
+                            <span class="small text-muted">ON.S = ON.L +[ (KI.L - KI.S) / (KI.L - KI.H) ] * (ON.H - ON.L)</span>
+                        </div>
+                        <div id="collapseMethodASetup" class="collapse show">
+                            <div class="row g-2 align-items-center mt-1">
+                                <div class="col-auto fw-bold small">預估 ON:</div>
+                                <div class="col-2"><input type="number" class="form-control form-control-sm" id="estON" oninput="setPRF()" step="0.1"></div>
+                                <div class="col-auto fw-bold small">PRF Low:</div>
+                                <div class="col-2"><input type="number" class="form-control form-control-sm text-center text-danger fw-bold" id="prfLow"></div>
+                                <div class="col-auto fw-bold small">PRF High:</div>
+                                <div class="col-2"><input type="number" class="form-control form-control-sm text-center text-danger fw-bold" id="prfHigh"></div>
+                                <div class="col-auto no-print">
+                                    <button class="btn btn-sm btn-info text-white py-0" onclick="applyPRFToRecords()">
+                                        <i class="bi bi-arrow-down-square"></i> 帶入紀錄表單
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 試驗原始紀錄區 -->
+                    <div class="section-card" id="rawDataSection">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="m-0 collapse-toggle text-dark" data-bs-toggle="collapse" data-bs-target="#collapseRawData">
+                                <i class="bi bi-chevron-down collapse-icon"></i>試驗原始紀錄 (Method A)**辛烷值試驗記錄表**
+                            </h5>
+                            <div>
+                                <button class="btn btn-sm btn-warning no-print me-1" onclick="event.stopPropagation(); renumberBlocks()">重新編號</button>
+                                <button class="btn btn-sm btn-success no-print" onclick="event.stopPropagation(); addRawDataBlock()">＋ 新增紀錄表單</button>
+                            </div>
+                        </div>
+                        <div id="collapseRawData" class="collapse show">
+                            <div id="rawDataContainer" class="row mt-2">
+                                <!-- JS 動態生成 -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 擴充：方法A 設定-2 與 紀錄-2 -->
+                    <div id="methodA2Wrapper" style="display:none;">
+                        <div class="section-card bg-method-a2 py-2">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="m-0 collapse-toggle text-dark" data-bs-toggle="collapse" data-bs-target="#collapseMethodASetup2">
+                                    <i class="bi bi-chevron-down collapse-icon"></i>方法 A (涵括法 Bracketing) 設定 - 2
+                                </h5>
+                                <span class="small text-muted">ON.S = ON.L +[ (KI.L - KI.S) / (KI.L - KI.H) ] * (ON.H - ON.L)</span>
+                            </div>
+                            <div id="collapseMethodASetup2" class="collapse show">
+                                <div class="row g-2 align-items-center mt-1">
+                                    <div class="col-auto fw-bold small">預估 ON:</div>
+                                    <div class="col-2"><input type="number" class="form-control form-control-sm" id="estON2" oninput="setPRF2()" step="0.1"></div>
+                                    <div class="col-auto fw-bold small">PRF Low:</div>
+                                    <div class="col-2"><input type="number" class="form-control form-control-sm text-center text-danger fw-bold" id="prfLow2"></div>
+                                    <div class="col-auto fw-bold small">PRF High:</div>
+                                    <div class="col-2"><input type="number" class="form-control form-control-sm text-center text-danger fw-bold" id="prfHigh2"></div>
+                                    <div class="col-auto no-print">
+                                        <button class="btn btn-sm btn-info text-white py-0" onclick="applyPRFToRecords2()">
+                                            <i class="bi bi-arrow-down-square"></i> 帶入紀錄表單-2
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section-card" id="rawDataSection2">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 class="m-0 collapse-toggle text-dark" data-bs-toggle="collapse" data-bs-target="#collapseRawData2">
+                                    <i class="bi bi-chevron-down collapse-icon"></i>試驗原始紀錄 (Method A)**辛烷值試驗記錄表** - 2
+                                </h5>
+                                <div>
+                                    <button class="btn btn-sm btn-secondary text-white no-print me-1" onclick="event.stopPropagation(); continueNumbering2()">接續上區塊編號</button>
+                                    <button class="btn btn-sm btn-warning no-print me-1" onclick="event.stopPropagation(); renumberBlocks2()">重新編號</button>
+                                    <button class="btn btn-sm btn-success no-print" onclick="event.stopPropagation(); addRawDataBlock2()">＋ 新增紀錄表單-2</button>
+                                </div>
+                            </div>
+                            <div id="collapseRawData2" class="collapse show">
+                                <div id="rawDataContainer2" class="row mt-2">
+                                    <!-- JS 動態生成 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 報告彙整區 方法A -->
+                    <div class="section-card bg-report-a" id="methodA_ReportArea">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="m-0 collapse-toggle text-success" data-bs-toggle="collapse" data-bs-target="#collapseReportA">
+                                <i class="bi bi-chevron-down collapse-icon"></i>2.樣品試驗報告*報告彙整 (方法A)*
+                            </h5>
+                             <div class="no-print d-flex gap-1">
+                                <button class="btn btn-sm btn-warning bg-white" onclick="event.stopPropagation(); renumberMethodA()">重新編號</button>
+                                <button class="btn btn-sm btn-info text-white" onclick="event.stopPropagation(); sendToSystem()">送出至系統</button>
+                                <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); openQueryModal()">資料查詢</button>
+                            </div>
+                        </div>
+                        <div id="collapseReportA" class="collapse show">
+                            <table class="table table-bordered table-striped table-sm text-center bg-white mt-2" id="methodA_Table">
+                                <thead class="th-blue">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>實驗日期</th>
+                                        <th>樣品名稱</th>
+                                        <th>Sample ON (實驗值)</th>
+                                        <th>Sample ON (報告值)</th>
+                                        <th>ΔKI/ΔON (av.)</th>
+                                        <th class="no-print">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                            <div class="mt-2 text-dark small fst-italic">
+                                <div>*實驗數據記錄至小數2位；報告數值記錄至小數1位，以四捨六入五成雙原則進位*</div>
+                                <div>*試驗使用CNS 12011 中方法A-涵括法-平衡燃料液位法進行試樣燃料之辛烷值評級。</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 重複性試驗紀錄區塊 -->
+                    <div class="section-card bg-repeatability py-2">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <h5 class="m-0 collapse-toggle text-dark" data-bs-toggle="collapse" data-bs-target="#collapseRepeatability">
+                                <i class="bi bi-chevron-down collapse-icon"></i>3.重複性試驗 (Repeatability)
+                            </h5>
+                            <div class="no-print d-flex gap-1">
+                                <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); addRepeatabilityRecord()">＋新增數據至報告</button>
+                                <button class="btn btn-sm btn-info text-white" onclick="event.stopPropagation(); sendRepToSystem()">送出至系統</button>
+                                <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); openRepQueryModal()">資料查詢</button>
+                            </div>
+                        </div>
+                        <div id="collapseRepeatability" class="collapse show">
+                            <h6 class="m-0 text-muted" style="font-size: 0.9rem;">***對同一樣品進行2次試驗(2組2循環之ON平均值)，所得結果之差值不得超出以下數值***r(m)=0.00834(125-ON)</h6>
+                            <div class="row g-2 align-items-center mb-2 mt-2">
+                                <div class="col-3">
+                                    <label class="small fw-bold">樣品名稱</label>
+                                    <input type="text" class="form-control form-control-sm" id="repSampleName" placeholder="Sample">
+                                </div>
+                                <div class="col-3">
+                                    <label class="small fw-bold">第1次試驗 ON1</label>
+                                    <input type="number" class="form-control form-control-sm" id="repON1" placeholder="報告值" oninput="calcRepeatability()">
+                                </div>
+                                <div class="col-3">
+                                    <label class="small fw-bold">第2次試驗 ON2</label>
+                                    <input type="number" class="form-control form-control-sm" id="repON2" placeholder="報告值" oninput="calcRepeatability()">
+                                </div>
+                                <div class="col-3">
+                                    <label class="small fw-bold">平均值 ON(av.)</label>
+                                    <input type="text" class="form-control form-control-sm bg-white" id="repAvg" readonly>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-2 align-items-center">
+                                <div class="col-3">
+                                    <label class="small fw-bold">試驗重複性 r</label>
+                                    <input type="text" class="form-control form-control-sm bg-white" id="repR" readonly placeholder="|ON1-ON2|">
+                                </div>
+                                <div class="col-3">
+                                    <label class="small fw-bold">方法重複性 r(m)</label>
+                                    <input type="text" class="form-control form-control-sm bg-white" id="repRm" readonly placeholder="0.00834*(125-Avg)">
+                                </div>
+                                <div class="col-3">
+                                    <label class="small fw-bold">相對差異 %</label>
+                                    <input type="text" class="form-control form-control-sm bg-white" id="repPercent" readonly>
+                                </div>
+                                <div class="col-3">
+                                    <label class="small fw-bold">判定</label>
+                                    <input type="text" class="form-control form-control-sm fw-bold text-center" id="repVerdict" readonly>
+                                </div>
+                            </div>
+
+                            <!-- 重複性試驗 數據紀錄表 -->
+                            <div class="mt-2 border-top pt-2">
+                                <table class="table table-bordered table-striped table-sm text-center bg-white" id="repeatabilityTable" style="font-size: 0.8rem;">
+                                    <thead class="table-primary">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>實驗日期</th>
+                                            <th>樣品名稱</th>
+                                            <th>ON1</th>
+                                            <th>ON2</th>
+                                            <th>平均值 ON(av.)</th>
+                                            <th>試驗重複性 r</th>
+                                            <th>方法重複性 r(m)</th>
+                                            <th>判定</th>
+                                            <th>相對差異 %</th>
+                                            <th class="no-print">X</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- 分頁 2: 設備查檢表 -->
+        <div class="tab-pane fade" id="checklist" role="tabpanel">
+            <div class="section-card" id="checkListArea">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="m-0 collapse-toggle fw-bold text-dark w-100 text-center" data-bs-toggle="collapse" data-bs-target="#collapseChecklist">
+                        <i class="bi bi-chevron-down collapse-icon position-absolute start-0 ms-3 mt-1"></i>試驗前/中/後設備確認查檢表
+                    </h3>
+                </div>
+                <div id="collapseChecklist" class="collapse show">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-10">
+                            <div class="text-center mb-3">
+                                <div class="row justify-content-center mt-2" style="font-size: 1.2rem;">
+                                    <div class="col-auto">點檢日期: <input type="date" id="checkDate" style="font-size: 1.1rem;"></div>
+                                    <div class="col-auto">點檢者: <input type="text" id="checkPerson" size="10" style="font-size: 1.1rem;"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mt-3 mb-3 no-print d-flex justify-content-center gap-2 flex-wrap">
+                                <button class="btn btn-warning" onclick="triggerChecklistLoad()">
+                                    <i class="bi bi-folder2-open"></i> 開啓前次網頁儲存資訊
+                                </button>
+                                <button class="btn btn-success" onclick="saveChecklistData()">
+                                    <i class="bi bi-save"></i> 儲存網頁
+                                </button>
+                                <button class="btn btn-danger" onclick="clearChecklistPage()">
+                                    <i class="bi bi-eraser"></i> 清除頁面
+                                </button>
+                                <button class="btn btn-primary shadow-sm fw-bold" onclick="printChecklistHTML()">
+                                    <i class="bi bi-printer-fill"></i> 列印(PDF/紙本)
+                                </button>
+                            </div>
+                            
+                            <table class="table table-bordered align-middle" id="checkTable">
+                                <thead class="table-light text-center">
+                                    <tr>
+                                        <th style="width: 55%">項目</th>
+                                        <th style="width: 10%">是 (OK)</th>
+                                        <th style="width: 10%">否 (NG)</th>
+                                        <th style="width: 25%">備註 (紀錄數值)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="checkListBody">
+                                    <!-- JS Generated -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 分頁 3: 學習測驗 -->
+        <div class="tab-pane fade" id="quiz" role="tabpanel">
+            <div class="section-card">
+                <div id="quizStartScreen" class="text-center py-5">
+                    <h3>CNS 12011 辛烷值試驗法 - 學習測驗</h3>
+                    <div class="d-inline-block text-start p-4 border rounded bg-light mt-3">
+                        <div class="mb-3">
+                            <label>受測人員姓名</label>
+                            <input type="text" class="form-control" id="quizTakerName">
+                        </div>
+                        <button class="btn btn-success w-100" onclick="startQuiz()">開始測驗</button>
+                    </div>
+                </div>
+
+                <div id="quizMain" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-3 sticky-top bg-white py-2 border-bottom">
+                        <h5 id="quizTimer" class="text-danger fw-bold">剩餘時間: 10:00</h5>
+                        <div>
+                            <button class="btn btn-outline-secondary me-2" onclick="quitQuiz()">放棄</button>
+                            <button class="btn btn-primary" onclick="submitQuiz()">交卷</button>
+                        </div>
+                    </div>
+                    <div id="questionContainer" class="container"></div>
+                </div>
+
+                <div id="quizResult" style="display: none;" class="text-center py-4">
+                    <h3>測驗結果</h3>
+                    <h1 id="scoreDisplay" class="display-3 fw-bold"></h1>
+                    <h4 id="passFailDisplay"></h4>
+                    <div id="certificateArea" class="mt-3">
+                        <button class="btn btn-warning shadow" id="btnDownloadCert" onclick="printCertificateBilingual()" style="display:none;">列印中英對照證書</button>
+                    </div>
+                    <div class="card text-start mx-auto mt-3" style="max-width: 800px;">
+                        <div class="card-header">解析</div>
+                        <div class="card-body" id="quizReview"></div>
+                    </div>
+                    <button class="btn btn-secondary mt-3" onclick="resetQuiz()">重新測驗</button>
+                </div>
+            </div>
+        </div>
+
+         <!-- 分頁 4: 標準重點說明 -->
+        <div class="tab-pane fade" id="doc" role="tabpanel">
+            <div class="section-card standard-content">
+                <h3 class="text-center mb-4">CNS 12011:2025 火花點火引擎燃料研究法-辛烷值試驗法 重點說明</h3>
+                
+                <h4>1. 適用範圍 (Scope) & 試驗限制</h4>
+                <ul>
+                    <li><strong>適用範圍：</strong> 火花點火引擎之液體燃料，研究法辛烷值 (RON) 定量測定。</li>
+                    <li><strong>測試範圍：</strong> 標準方法適用於 <strong>40 ~ 120 RON</strong>。</li>
+                    <li><strong>含氧燃料：</strong> 適用於含氧量較高之燃料，包括最高含 <strong>25 vol%</strong> 乙醇之燃料。</li>
+                    <li><strong>試驗限制：</strong> 某些含氧化合物可能不適用本方法，需參照其他標準。</li>
+                </ul>
+
+                <h4>2. 關鍵定義與術語</h4>
+                <ul>
+                    <li><strong>RON (Research Octane Number)：</strong> 描述燃料在低速 (600 rpm)、溫和進氣條件下的抗爆震性能。</li>
+                    <li><strong>PRF (一級參考燃料)：</strong> 
+                        <ul>
+                            <li>異辛烷 (2,2,4-三甲基戊烷)：定義為 100 ON。</li>
+                            <li>正庚烷：定義為 0 ON。</li>
+                            <li><strong>>100 RON：</strong> 使用異辛烷加入四乙基鉛 (TEL) 定義 (依 ASTM 表格)。</li>
+                        </ul>
+                    </li>
+                    <li><strong>TSF (甲苯標準化燃料)：</strong> 由甲苯、異辛烷、正庚烷按規定比例調配，用於查核引擎狀態及調校進氣溫度 (IAT)。</li>
+                    <li><strong>查核燃料 (Check Fuel)：</strong> 用於日常品質管制，具有選定特性之燃料。</li>
+                </ul>
+
+                <h4>3. 標準操作條件 (Standard Operating Conditions)</h4>
+                <div class="table-responsive">
+                    <table class="standard-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 30%">項目</th>
+                                <th style="width: 70%">標準規格 / 設定值</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>引擎轉速</strong></td><td>600 rpm ± 6 rpm (點火時) / 不得超過 ±3 rpm 變動</td></tr>
+                            <tr><td><strong>曲軸箱油溫</strong></td><td>57 ℃ ± 8 ℃ (135 ℉ ± 15 ℉)</td></tr>
+                            <tr><td><strong>汽缸夾套冷卻劑</strong></td><td>100 ℃ ± 1.5 ℃ (212 ℉ ± 3 ℉) (沸騰水狀態)</td></tr>
+                            <tr><td><strong>進氣溫度 (IAT)</strong></td><td><strong>52 ℃ ± 1 ℃ (125 ℉ ± 2 ℉)</strong> (標準大氣壓 101.0 kPa 下)</td></tr>
+                            <tr><td><strong>進氣濕度</strong></td><td>3.56 ~ 7.12 g 水 / kg 乾空氣 (25~50 grains/lb)</td></tr>
+                            <tr><td><strong>點火正時</strong></td><td>13° BTDC (恆定)</td></tr>
+                            <tr><td><strong>火星塞間隙</strong></td><td>0.51 mm ± 0.13 mm</td></tr>
+                            <tr><td><strong>氣門間隙 (熱車)</strong></td><td>進氣: 0.20 mm ± 0.025 mm / 排氣: 0.20 mm ± 0.025 mm</td></tr>
+                            <tr><td><strong>機油壓力</strong></td><td>172 ~ 207 kPa (25 ~ 30 psi)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h4>4. 四種試驗方法比較</h4>
+                
+                <h5>方法 A - 涵括法 (Bracketing) - 平衡燃料液位</h5>
+                <p><strong>適用：</strong> 40-120 RON，為標準仲裁方法。</p>
+                <ul>
+                    <li><strong>程序：</strong> 調整試樣液位至最大爆震強度 (Max KI)。調整壓縮比使 KI 符合標準。</li>
+                    <li><strong>包夾：</strong> 選用兩個 PRF (高與低)，差值不超過 2.0 ON (80-100 RON 範圍)，將試樣 KI 包夾其中。</li>
+                    <li><strong>計算：</strong> 使用內插法計算。</li>
+                </ul>
+
+                <h5>方法 B - 涵括法 (Bracketing) - 動態燃料液位</h5>
+                <p><strong>適用：</strong> 80-100 RON，快速測試。</p>
+                <ul>
+                    <li>利用 falling level (液位下降) 技術，在液位下降過程中自動抓取最大 KI。</li>
+                    <li>程序與方法 A 類似，但操作速度較快。</li>
+                </ul>
+
+                <h5>方法 C - 壓縮比法 (Compression Ratio)</h5>
+                <p><strong>適用：</strong> 80-100 RON，快速篩選。</p>
+                <ul>
+                    <li>直接調整汽缸高度 (CR) 直到 KI 達到標準值 (50 ± 2)。</li>
+                    <li>利用 CR 讀數直接查表 (Table D.1/D.2) 換算 ON。</li>
+                    <li><strong>注意：</strong> 必須進行大氣壓力補償 (Table D.4/D.5)。</li>
+                </ul>
+
+                <h5>方法 D - 辛烷值分析儀 (OA)</h5>
+                <p><strong>適用：</strong> 使用自動化 OA 系統。</p>
+                <ul>
+                    <li>利用自動化設備依據設定程序自動搜尋最大 KI 並鎖定壓縮比。</li>
+                    <li>適用於 92 ~ 99 RON 範圍。</li>
+                </ul>
+
+                <h4>5. TSF 調校與大氣壓力補償</h4>
+                <div class="highlight-box">
+                    <strong>重要觀念：</strong>
+                    <ol>
+                        <li><strong>TSF 查核：</strong> 使用 TSF 評級確認引擎狀態。若偏差在公差內 (如 ±0.3)，則引擎合格。</li>
+                        <li><strong>IAT 調校：</strong> 若 TSF 評級有偏差，可調整進氣溫度 (IAT) 進行補償。
+                            <ul>
+                                <li>調整限制：標準值 ± 22°C (± 40°F)。</li>
+                                <li>經驗法則：每 0.1 ON 偏差約需調整 IAT 5.5°C (10°F)。</li>
+                            </ul>
+                        </li>
+                        <li><strong>大氣壓力補償：</strong> 汽缸高度 (CR) 與辛烷值之關係受空氣密度影響。需依大氣壓力修正 CR 或數位計數器讀數 (詳見表 D.4/D.5)。</li>
+                    </ol>
+                </div>
+
+                <h4>6. 精密度 (Precision)</h4>
+                <ul>
+                    <li><strong>重複性 (Repeatability, r)：</strong> 同一操作者、同一設備，短期內測試同一樣品。
+                        <ul>
+                            <li>85 ~ 98 RON 範圍：r ≈ 0.2 ON (參考公式 0.00834 * (125 - RON))。</li>
+                        </ul>
+                    </li>
+                    <li><strong>再現性 (Reproducibility, R)：</strong> 不同實驗室、不同設備，測試同一樣品。
+                        <ul>
+                            <li>85 ~ 98 RON 範圍：R ≈ 0.7 ON。</li>
+                        </ul>
+                    </li>
+                    <li><strong>報告值：</strong> 修整至 0.1 ON (向偶數修整規則，例如 x.x5 -> x.(偶數))。</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- 管理員後台 Modal -->
+<div class="modal fade" id="adminModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title">使用者管理 (Admin Only)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label>新增使用者</label>
+                    <div class="input-group">
+                        <input type="text" id="newUsername" class="form-control" placeholder="帳號">
+                        <input type="text" id="newPassword" class="form-control" placeholder="密碼">
+                        <button class="btn btn-success" onclick="addUser()">新增</button>
+                    </div>
+                </div>
+                <hr>
+                <h6>現有使用者列表</h6>
+                <ul class="list-group" id="userList"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 資料查詢 Modal (Method A) -->
+<div class="modal fade" id="queryModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">歷史資料查詢 (Method A System Data)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-2 mb-3 align-items-end">
+                    <div class="col-4">
+                        <label>開始日期</label>
+                        <input type="date" id="queryStartDate" class="form-control">
+                    </div>
+                    <div class="col-4">
+                        <label>結束日期</label>
+                        <input type="date" id="queryEndDate" class="form-control">
+                    </div>
+                    <div class="col-4">
+                        <button class="btn btn-primary w-100" onclick="performQuery()">查詢</button>
+                    </div>
+                </div>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-bordered table-sm text-center" id="queryResultTable">
+                        <thead class="table-light">
+                            <tr><th>日期</th><th>樣品</th><th>ON(av.)</th><th>Report</th><th>Stab</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="exportQueryCSV()">匯出 CSV</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 資料查詢 Modal (Repeatability) -->
+<div class="modal fade" id="repQueryModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title">歷史資料查詢 (Repeatability Data)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-2 mb-3 align-items-end">
+                    <div class="col-4">
+                        <label>開始日期</label>
+                        <input type="date" id="repQueryStartDate" class="form-control">
+                    </div>
+                    <div class="col-4">
+                        <label>結束日期</label>
+                        <input type="date" id="repQueryEndDate" class="form-control">
+                    </div>
+                    <div class="col-4">
+                        <button class="btn btn-info text-white w-100" onclick="performRepQuery()">查詢</button>
+                    </div>
+                </div>
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-bordered table-sm text-center" id="repQueryResultTable">
+                        <thead class="table-light">
+                            <tr><th>日期</th><th>樣品</th><th>ON1</th><th>ON2</th><th>Avg</th><th>r</th><th>r(m)</th><th>判定</th><th>%</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="exportRepQueryCSV()">匯出 CSV</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 隱藏的列印用容器 (用於原生列印時顯示) -->
+<div id="printContainer"></div>
+
+<!-- 隱藏的檔案輸入 (用於開啟舊檔 - 試驗紀錄) -->
+<input type="file" id="jsonFileInput" style="display:none" accept=".json" onchange="handleFileSelect(this)">
+
+<!-- 隱藏的檔案輸入 (用於開啟舊檔 - 設備查檢表) -->
+<input type="file" id="checklistFileInput" style="display:none" accept=".json" onchange="handleChecklistFileSelect(this)">
+
+<script>
+// ==================== 數據庫區塊 ====================
+// 1. P-COR-IAT (完整數據)
+const raw_PCorIAT = `大氣壓力(inHg),數位計數器修正值(CR),針盤指示錶修正值(DIR),進氣溫度(℉)
+21,250,-0.178,9
+21.1,247,-0.176,9
+21.2,244,-0.174,9
+21.3,241,-0.172,9
+21.4,239,-0.17,9
+21.5,236,-0.168,9
+21.6,233,-0.166,9
+21.7,230,-0.164,9
+21.8,227,-0.162,9
+21.9,225,-0.16,9
+22,222,-0.158,9
+22.1,219,-0.156,10
+22.2,216,-0.154,12
+22.3,213,-0.152,13
+22.4,211,-0.15,15
+22.5,206,-0.148,16
+22.6,205,-0.146,17
+22.7,202,-0.144,19
+22.8,199,-0.142,20
+22.9,197,-0.14,22
+23,194,-0.138,23
+23.1,191,-0.136,25
+23.2,188,-0.134,26
+23.3,185,-0.132,28
+23.4,183,-0.13,29
+23.5,180,-0.128,31
+23.6,177,-0.126,32
+23.7,174,-0.124,34
+23.8,171,-0.122,35
+23.9,169,-0.12,37
+24,166,-0.118,38
+24.1,163,-0.116,39
+24.2,160,-0.114,41
+24.3,157,-0.112,42
+24.4,155,-0.11,44
+24.5,152,-0.108,45
+24.6,149,-0.106,47
+24.7,146,-0.104,48
+24.8,143,-0.102,50
+24.9,141,-0.1,51
+25,138,-0.098,53
+25.1,135,-0.096,54
+25.2,132,-0.094,56
+25.3,129,-0.092,57
+25.4,127,-0.09,59
+25.5,124,-0.088,60
+25.6,121,-0.086,61
+25.7,118,-0.084,63
+25.8,115,-0.082,64
+25.9,113,-0.08,66
+26,110,-0.078,67
+26.1,107,-0.076,69
+26.2,104,-0.074,70
+26.3,101,-0.072,72
+26.4,99,-0.07,73
+26.5,96,-0.068,75
+26.6,93,-0.066,76
+26.7,90,-0.064,78
+26.8,87,-0.062,79
+26.9,85,-0.06,81
+27,82,-0.058,82
+27.1,79,-0.056,84
+27.2,76,-0.054,85
+27.3,73,-0.052,86
+27.4,71,-0.05,88
+27.5,68,-0.048,89
+27.6,65,-0.046,91
+27.7,62,-0.044,92
+27.8,59,-0.042,94
+27.9,57,-0.04,95
+28,54,-0.038,97
+28.1,51,-0.036,98
+28.2,48,-0.034,100
+28.3,45,-0.032,101
+28.4,43,-0.03,103
+28.5,40,-0.028,104
+28.6,37,-0.026,106
+28.7,34,-0.024,107
+28.8,31,-0.022,109
+28.9,29,-0.02,110
+29,26,-0.018,111
+29.1,23,-0.016,113
+29.2,20,-0.014,114
+29.3,17,-0.012,116
+29.4,15,-0.01,117
+29.5,12,-0.008,119
+29.6,9,-0.006,120
+29.7,6,-0.004,122
+29.8,3,-0.002,123
+29.9,1,0,125
+30,-2,0.002,126
+30.1,-5,0.004,127
+30.2,-8,0.006,129
+30.3,-11,0.008,130
+30.4,-13,0.01,132
+30.5,-16,0.012,133
+30.6,-19,0.014,135
+30.7,-22,0.016,136
+30.8,-25,0.018,138
+30.9,-27,0.02,139`;
+
+// 2. 燃料ON與CR/DIR對照表 (完整數據)
+const raw_ONtoCRDIR_Full = `ON,CR,DIR
+70,523,0.641
+70.1,524,0.64
+70.2,525,0.64
+70.3,525,0.64
+70.4,526,0.639
+70.5,526,0.639
+70.6,527,0.638
+70.7,527,0.638
+70.8,528,0.638
+70.9,529,0.637
+71,530,0.636
+71.1,531,0.635
+71.2,532,0.635
+71.3,532,0.635
+71.4,533,0.634
+71.5,533,0.634
+71.6,534,0.633
+71.7,534,0.633
+71.8,535,0.633
+71.9,536,0.632
+72,537,0.631
+72.1,538,0.63
+72.2,539,0.63
+72.3,539,0.63
+72.4,540,0.629
+72.5,540,0.629
+72.6,541,0.628
+72.7,542,0.628
+72.8,543,0.627
+72.9,544,0.626
+73,545,0.625
+73.1,546,0.625
+73.2,546,0.625
+73.3,547,0.624
+73.4,548,0.623
+73.5,548,0.623
+73.6,549,0.623
+73.7,550,0.622
+73.8,551,0.621
+73.9,552,0.621
+74,553,0.62
+74.1,554,0.619
+74.2,554,0.619
+74.3,555,0.618
+74.4,556,0.618
+74.5,557,0.617
+74.6,558,0.616
+74.7,559,0.616
+74.8,560,0.615
+74.9,560,0.615
+75,561,0.614
+75.1,562,0.613
+75.2,563,0.613
+75.3,564,0.612
+75.4,565,0.611
+75.5,566,0.611
+75.6,567,0.61
+75.7,567,0.61
+75.8,568,0.609
+75.9,569,0.608
+76,570,0.608
+76.1,571,0.607
+76.2,572,0.606
+76.3,573,0.606
+76.4,574,0.605
+76.5,575,0.604
+76.6,576,0.603
+76.7,577,0.603
+76.8,578,0.602
+76.9,579,0.601
+77,580,0.601
+77.1,581,0.6
+77.2,581,0.6
+77.3,582,0.599
+77.4,583,0.599
+77.5,584,0.598
+77.6,585,0.597
+77.7,586,0.596
+77.8,587,0.596
+77.9,588,0.595
+78,589,0.594
+78.1,590,0.594
+78.2,591,0.593
+78.3,592,0.592
+78.4,593,0.591
+78.5,594,0.591
+78.6,595,0.59
+78.7,596,0.589
+78.8,597,0.589
+78.9,598,0.588
+79,599,0.587
+79.1,600,0.586
+79.2,601,0.586
+79.3,602,0.585
+79.4,603,0.584
+79.5,604,0.584
+79.6,605,0.583
+79.7,606,0.582
+79.8,607,0.582
+79.9,608,0.581
+80,609,0.58
+80.1,610,0.579
+80.2,611,0.579
+80.3,612,0.578
+80.4,613,0.577
+80.5,614,0.577
+80.6,615,0.576
+80.7,616,0.575
+80.8,617,0.574
+80.9,618,0.574
+81,619,0.573
+81.1,620,0.572
+81.2,621,0.572
+81.3,622,0.571
+81.4,623,0.57
+81.5,624,0.569
+81.6,625,0.569
+81.7,626,0.568
+81.8,627,0.567
+81.9,628,0.567
+82,629,0.566
+82.1,630,0.565
+82.2,631,0.564
+82.3,632,0.564
+82.4,633,0.563
+82.5,634,0.562
+82.6,635,0.562
+82.7,636,0.561
+82.8,637,0.56
+82.9,639,0.559
+83,640,0.558
+83.1,641,0.557
+83.2,642,0.557
+83.3,643,0.556
+83.4,644,0.555
+83.5,645,0.555
+83.6,646,0.554
+83.7,647,0.553
+83.8,648,0.552
+83.9,649,0.552
+84,650,0.551
+84.1,651,0.55
+84.2,652,0.55
+84.3,653,0.549
+84.4,654,0.548
+84.5,656,0.547
+84.6,657,0.546
+84.7,658,0.545
+84.8,659,0.545
+84.9,660,0.544
+85,661,0.543
+85.1,663,0.542
+85.2,664,0.541
+85.3,666,0.54
+85.4,667,0.539
+85.5,668,0.538
+85.6,669,0.538
+85.7,670,0.537
+85.8,671,0.536
+85.9,672,0.535
+86,673,0.535
+86.1,674,0.534
+86.2,675,0.533
+86.3,677,0.532
+86.4,678,0.531
+86.5,680,0.53
+86.6,681,0.529
+86.7,682,0.528
+86.8,683,0.528
+86.9,684,0.527
+87,685,0.526
+87.1,687,0.525
+87.2,688,0.524
+87.3,689,0.523
+87.4,691,0.522
+87.5,692,0.521
+87.6,694,0.52
+87.7,695,0.519
+87.8,697,0.518
+87.9,698,0.517
+88,699,0.516
+88.1,700,0.516
+88.2,701,0.515
+88.3,702,0.514
+88.4,704,0.513
+88.5,705,0.512
+88.6,706,0.511
+88.7,708,0.51
+88.8,709,0.509
+88.9,711,0.508
+89,712,0.507
+89.1,713,0.506
+89.2,715,0.505
+89.3,716,0.504
+89.4,718,0.503
+89.5,719,0.502
+89.6,721,0.501
+89.7,722,0.5
+89.8,723,0.499
+89.9,725,0.498
+90,726,0.497
+90.1,728,0.496
+90.2,729,0.495
+90.3,730,0.494
+90.4,732,0.493
+90.5,733,0.492
+90.6,735,0.491
+90.7,736,0.49
+90.8,737,0.489
+90.9,739,0.488
+91,740,0.487
+91.1,742,0.486
+91.2,743,0.485
+91.3,744,0.484
+91.4,746,0.483
+91.5,747,0.482
+91.6,749,0.481
+91.7,750,0.48
+91.8,752,0.479
+91.9,753,0.478
+92,756,0.476
+92.1,757,0.475
+92.2,759,0.474
+92.3,760,0.473
+92.4,761,0.472
+92.5,763,0.471
+92.6,764,0.47
+92.7,766,0.469
+92.8,767,0.468
+92.9,768,0.467
+93,770,0.466
+93.1,772,0.464
+93.2,774,0.463
+93.3,776,0.462
+93.4,778,0.46
+93.5,780,0.459
+93.6,781,0.458
+93.7,783,0.457
+93.8,784,0.456
+93.9,785,0.455
+94,787,0.454
+94.1,789,0.452
+94.2,791,0.451
+94.3,793,0.45
+94.4,796,0.447
+94.5,797,0.447
+94.6,799,0.445
+94.7,801,0.444
+94.8,802,0.443
+94.9,804,0.442
+95,805,0.441
+95.1,807,0.44
+95.2,809,0.438
+95.3,811,0.437
+95.4,812,0.436
+95.5,814,0.435
+95.6,816,0.433
+95.7,818,0.432
+95.8,820,0.43
+95.9,822,0.429
+96,824,0.428
+96.1,826,0.426
+96.2,828,0.425
+96.3,830,0.423
+96.4,832,0.422
+96.5,835,0.42
+96.6,837,0.418
+96.7,839,0.417
+96.8,841,0.416
+96.9,843,0.414
+97,845,0.413
+97.1,847,0.411
+97.2,849,0.41
+97.3,852,0.408
+97.4,854,0.406
+97.5,856,0.405
+97.6,858,0.403
+97.7,860,0.402
+97.8,862,0.401
+97.9,864,0.399
+98,867,0.397
+98.1,870,0.395
+98.2,873,0.393
+98.3,875,0.391
+98.4,877,0.39
+98.5,880,0.388
+98.6,883,0.386
+98.7,885,0.384
+98.8,888,0.382
+98.9,891,0.38
+99,893,0.379
+99.1,895,0.377
+99.2,898,0.375
+99.3,900,0.374
+99.4,903,0.372
+99.5,908,0.368
+99.6,909,0.367
+99.7,912,0.365
+99.8,915,0.363
+99.9,917,0.362
+100,919,0.36`;
+
+// 3. 查檢表內容
+const raw_Checklist = `項目,是,否,備註
+一、試驗前/引擎啟動前檢查:,,,
+1.開2個引擎電源(先機油加熱),,,,
+2.查大氣壓力，設定初始進氣溫度,,,
+3.冷凍機中冷凍液高度(至少一半),,,,
+4.倒入適當之暖機油於 油杯中,,,
+5.確認潤滑油液位是否(約2/3),,,
+6.檢查冷凝器排放水管無鬆脫?,,,
+7.開2台冷凝器開關(Power， Pump)並確認溫度是否達到設定值,,,
+8.Bowel旋鈕須在數字之間,,,
+9.確認Konckmeter為零點(並適當調整),,,
+10.點火-ignition switch為OFF,,,
+11.潤滑油溫度控制開關置於"7",,,
+12.汽缸冷卻液液位(底部0.7~1.0公分),,,
+13.打開冷卻水進水閥(共兩個)與出水閥,,,
+14.以潤滑油潤滑進、出4氣孔,,,
+15潤滑油溫是否到達135℉±15℉(120℉~150℉)(57℃±8℃),,,
+二、啟動引擎:,,,
+16.轉至START鍵後，停住20-30秒，等待oil pressure至25-30psi(或黃燈熄滅時)，再轉至RUN,,,
+17.開關開至IGNITION、AIR HEATER鍵,,,
+18.將進油旋轉至暖機油對應之油杯,,,
+19.打開DETONATION METER控制板上Power開關,,,
+三、啟動引擎後檢查:,,,
+20.潤滑油液位約1/2以上,,,
+21.潤滑油溫度在120℉~150℉ (57℃±8℃),,,
+22.確認曲軸箱真空度0～-5 (比大氣壓力低25mm~150mm 水柱),,,
+23.潤滑油壓是否達25-30 psi (172 kPa ~ 207 kPa),,,
+24.爆震計是否歸零-轉至ZERO,,,
+25.進氣門及排氣門間隙量測0.008±0.001(in)( 0.2 mm±0.025 mm),,,
+26.點火角度為上止點前13度(btdc),,,
+27.飛輪600±6轉,,,
+28.汽缸夾套冷卻劑溫度212 ℉ ± 3 ℉ (100℃±1.5℃),,,
+29.冷卻劑液位Level Hot  ± 1cm,,,
+30.調整適當氣缸高度(C.R.)暖機,,,
+31.調整進氣溫度 (紀錄標準進氣溫度(查表)及補償後進氣溫度),,,
+32.確認冷卻水量穩定排放,,,
+33.以濕度計確認進氣濕度：3.56 g/kg~7.12 g/kg (水/乾空氣),,,
+四、試驗後/關機:,,,
+34.旋鈕轉至非數字區,,,
+35.排除剩餘油樣 ,,,
+36.將C.R.調至722(即指示表0),,,
+37.關閉 Detonation Meter Power及Zero、進氣溫度開關OFF、點火、引擎開關,,,
+38.關閉冷凝器開關(2台),,,
+39.關閉進水閥(2個)及引擎電源(2個),,,
+40.飛輪轉軸轉至TDC(並歸位),,,
+41.清空廢液桶,,,
+42.關閉冷氣、空氣清淨機及電燈,,,`;
+
+// 4. 200題庫 (已完整載入)
+const quizDataRaw =[
+    { q: "研究法辛烷值 (RON) 的適用範圍為？", o:["0~100", "40~120", "88~101", "70~115"], a: 1 },
+    { q: "本標準最高可測定的乙醇含量為多少 vol%？", o:["10%", "15%", "20%", "25%"], a: 3 },
+    { q: "辛烷值範圍由哪一種燃料定義？", o:["商業汽油", "二級參考燃料", "一級參考燃料 (PRF)", "航空煤油"], a: 2 },
+    { q: "標準 CFR 引擎具有何種特性？", o:["固定壓縮比", "單缸可變壓縮比", "雙缸高速", "轉子式"], a: 1 },
+    { q: "下列何者不是公認參考值 (ARV) 的來源？", o:["理論值", "交換測試共識值", "操作員目測值", "經確認的指定值"], a: 2 },
+    { q: "「查核燃料 (Check fuel)」主要用於？", o:["清潔積碳", "品質管制測試", "增加馬力", "潤滑"], a: 1 },
+    { q: "「汽缸高度」指的是相對於活塞上止點與何處的垂直位置？", o:["油箱頂部", "曲軸箱頂部加工表面", "氣門座", "火星塞孔"], a: 1 },
+    { q: "數位計數器 (Digital counter) 讀數 930 對應的針盤指示錶讀數為多少英吋？", o:["0.125", "0.352", "0.500", "0.930"], a: 1 },
+    { q: "爆震儀 SSD 7000 是哪一年上市的裝置？", o:["1969", "1979", "2017", "2025"], a: 2 },
+    { q: "爆震拾音器 (Detonation pickup) 是何種類型？", o:["壓電型", "磁致伸縮型", "熱電耦型", "光學型"], a: 1 },
+    { q: "「動態燃料液位」係透過什麼方式改變燃氣比？", o:["調整主噴嘴", "液位恆定速率下降", "改變轉速", "調整進氣門"], a: 1 },
+    { q: "異辛烷的辛烷值定義為？", o:["0", "50", "100", "120"], a: 2 },
+    { q: "正庚烷的辛烷值定義為？", o:["0", "50", "100", "120"], a: 0 },
+    { q: "辛烷值超過 100 時，是以 mL TEL 加入何種物質中表示？", o:["正庚烷", "異辛烷", "甲苯", "乙醇"], a: 1 },
+    { q: "何謂「空運轉 (Motoring)」？", o:["正常點火運轉", "只有馬達驅動、不供油且點火關閉", "低速熱機", "停機狀態"], a: 1 },
+    { q: "「展寬 (Spread)」係指每單位辛烷值呈現於爆震錶的？", o:["溫度變化", "間隔刻度", "壓力落差", "時間延遲"], a: 1 },
+    { q: "甲苯標準化燃料的縮寫為？", o:["PRF", "TSF", "ARV", "IAT"], a: 1 },
+    { q: "研究法辛烷值的英文縮寫為？", o:["MON", "AKI", "RON", "ON"], a: 2 },
+    { q: "抗爆震指數 (AKI) 的計算公式為？", o:["RON+MON", "(RON+MON)/2", "RON-MON", "RON×0.5"], a: 1 },
+    { q: "在標準壓力下，進氣溫度 (IAT) 規定為？", o:["38 ℃", "52 ℃", "65 ℃", "100 ℃"], a: 1 },
+    { q: "PRF 摻合物的調配精密度應達到？", o:["±0.1%", "±0.2%", "±0.5%", "±1.0%"], a: 1 },
+    { q: "爆震強度 (KI) 在類比錶上的正常操作範圍為？", o:["0~100", "20~80", "45~55", "50~100"], a: 1 },
+    { q: "數位爆震錶 KI 顯示範圍為？", o:["0~100", "0~999", "20~80", "固定 100"], a: 1 },
+    { q: "指引表 (Guide tables) 是在何種壓力下校正的關係？", o:["任意壓力", "760 mm Hg (101.0 kPa)", "500 mm Hg", "1000 mm Hg"], a: 1 },
+    { q: "下列何者非 PRF 組分？", o:["異辛烷", "正庚烷", "甲苯", "含鉛異辛烷"], a: 2 },
+    { q: "辛烷值 80.2 屬何種範圍評級？", o:["低辛烷值", "標準化評級", "超過 100 評級", "柴 diesel 評級"], a: 1 },
+    { q: "「燃氣比」是指？", o:["油量/水量", "燃料/空氣比", "鉛含量", "辛烷值/十六烷值"], a: 1 },
+    { q: "CFR 引擎是由哪個組織合作研發的？", o:["ISO", "ASTM", "燃料研究組織", "聯合國"], a: 2 },
+    { q: "KI 達到最大值的條件稱為？", o:["最小爆震", "最大爆震強度燃氣比", "停火點", "平衡點"], a: 1 },
+    { q: "本標準修訂公布日期為？", o:["民國76年", "民國114年", "2025年", "B與C皆是"], a: 3 },
+    { q: "汽缸夾套冷卻劑的水沸點公差為？", o:["±0.5 ℃", "±1.5 ℃", "±2.0 ℃", "±5.0 ℃"], a: 1 },
+    { q: "潤滑油應採用何種等級？", o:["SAE 10W-30", "SAE 30", "SAE 40", "多級油"], a: 1 },
+    { q: "潤滑油的黏度指數 (VI) 不得小於？", o:["70", "85", "100", "120"], a: 1 },
+    { q: "潤滑油動黏度在 100 ℃ 下應為？", o:["5.0~8.0 mm²/s", "9.3~12.5 mm²/s", "15~20 mm²/s", "無限制"], a: 1 },
+    { q: "PRF 異辛烷純度最低要求為？", o:["99.0 vol%", "99.75 vol%", "99.9 vol%", "95.0 vol%"], a: 1 },
+    { q: "PRF 正庚烷純度最低要求為？", o:["99.0 vol%", "99.75 vol%", "99.9 vol%", "95.0 vol%"], a: 1 },
+    { q: "TSF 甲苯純度最低要求為？", o:["99.0 vol%", "99.5 vol%", "99.9 vol%", "98.0 vol%"], a: 1 },
+    { q: "甲苯中含水量上限為多少 ppm？", o:["50", "100", "200", "500"], a: 2 },
+    { q: "TEL 稀釋液中四乙基鉛的品質百分比約為？", o:["10%", "18.23%", "50%", "70%"], a: 1 },
+    { q: "取樣應依據哪一標準？", o:["CNS 1217", "CNS 3699", "CNS 12614", "CNS 14823"], a: 0 },
+    { q: "試樣打開容器前應冷卻至？", o:["0 ℃", "2~10 ℃", "15~20 ℃", "室溫"], a: 1 },
+    { q: "燃料應存放於何種容器以避光？", o:["透明玻璃瓶", "深棕色玻璃瓶或金屬罐", "塑膠瓶", "開口杯"], a: 1 },
+    { q: "分配參考燃料系統輸送速率上限為？", o:["100 mL/min", "200 mL/min", "400 mL/min", "1000 mL/min"], a: 2 },
+    { q: "TEL 稀釋液的主要成分除了四乙基鉛還有？", o:["二溴乙烷", "水", "乙醇", "丙酮"], a: 0 },
+    { q: "80 ON PRF 是由異辛烷與何者調配？", o:["甲苯", "正庚烷", "乙醇", "水"], a: 1 },
+    { q: "80 ON PRF 中異辛烷的容許範圍為多少 vol%？", o:["19.9~20.1", "79.9~80.1", "50~60", "固定 80.0"], a: 1 },
+    { q: "處理參考燃料應在哪種環境下？", o:["密閉室內", "良好的通風櫃中", "戶外陽光下", "冰箱內"], a: 1 },
+    { q: "下列何者不是危害物質？", o:["TEL", "乙二醇", "蒸餾水", "甲苯"], a: 2 },
+    { q: "甲苯對何種干擾最敏感？", o:["紫外線", "空氣濕度", "噪音", "磁場"], a: 1 },
+    { q: "查核燃料 (Check fuel) 的辛烷值應為何種性質？", o:["隨機", "選定的 ARV", "每批不同", "不需要測定"], a: 1 },
+    { q: "乙二醇防凍劑的主要警告為？", o:["易爆", "有毒，吞咽致命", "具放射性", "助燃"], a: 1 },
+    { q: "PRF 燃料混合物應在何時進行徹底混合？", o:["加入引擎前", "調配後兩天", "引擎熄火後", "評級結束後"], a: 0 },
+    { q: "參考燃料標籤應註明？", o:["成分", "調配日期", "辛烷值", "以上皆是"], a: 3 },
+    { q: "試樣運送過程中應防止？", o:["洩漏", "受熱", "劇烈震盪", "以上皆是"], a: 3 },
+    { q: "潤滑油不應含有哪種增進劑？", o:["清淨劑", "黏度指數增進劑", "防鏽劑", "抗氧化劑"], a: 1 },
+    { q: "試驗用水應符合 CNS 3699 的幾型？", o:["I型", "II型", "III型", "IV型"], a: 3 },
+    { q: "測量汽油中的鉛含量採用哪一標準？", o:["IP 224", "CNS 1217", "ASTM D4814", "CNS 2925"], a: 0 },
+    { q: "高乙醇含量燃料測試時，應注意？", o:["引擎冷卻", "水分含量", "氣門腐蝕", "避光"], a: 1 },
+    { q: "化學分析用水的用途為？", o:["冷卻汽缸", "調配試劑", "洗滌容器", "以上皆是"], a: 3 },
+    { q: "TEL 稀釋液的顏色通常為？", o:["透明", "黃色", "橙色或染料色", "黑色"], a: 2 },
+    { q: "引擎轉速在點火狀態下應為？", o:["600 rpm ± 6 rpm", "900 rpm ± 9 rpm", "1200 rpm ± 12 rpm", "500 rpm"], a: 0 },
+    { q: "飛輪定位至上止點 (tdc) 時，應對準飛輪上的？", o:["10°", "0°", "13°", "25°"], a: 1 },
+    { q: "進氣門開啟時間為？", o:["tdc 前 10.0° ± 2.5°", "atdc 10.0° ± 2.5°", "bdc 前", "bdc 後"], a: 1 },
+    { q: "排氣門關閉時間為？", o:["atdc 15.0° ± 2.5°", "bbdc 40°", "tdc 前", "上止點"], a: 0 },
+    { q: "氣門升程規定值為多少 mm？", o:["1.0", "6.045 ± 0.05", "10.5", "0.5"], a: 1 },
+    { q: "進氣門擋塊 (shroud) 的角度為？", o:["90°", "180°", "270°", "360°"], a: 1 },
+    { q: "化油器文氏管喉直徑規定為？", o:["1/2 in.", "9/16 in.", "3/4 in.", "1/4 in."], a: 1 },
+    { q: "引擎旋轉方向由前端觀測應為？", o:["逆時針", "順時針", "雙向", "隨馬達而定"], a: 1 },
+    { q: "氣門間隙 (熱運轉) 應設定為多少 mm？", o:["0.10", "0.20 ± 0.025", "0.51", "1.0"], a: 1 },
+    { q: "潤滑油壓力操作範圍為？", o:["100~150 kPa", "172~207 kPa", "200~300 kPa", "0~100 kPa"], a: 1 },
+    { q: "潤滑油溫度規定為？", o:["52 ℃", "57 ± 8 ℃", "100 ℃", "室溫"], a: 1 },
+    { q: "汽缸夾套冷卻劑溫度公差為？", o:["±0.5 ℃", "±1.5 ℃", "±5.0 ℃", "±0.1 ℃"], a: 1 },
+    { q: "記錄 KI 時，冷卻劑溫度應恆定在多少範圍內？", o:["±0.1 ℃", "±0.5 ℃", "±1.0 ℃", "±2.0 ℃"], a: 1 },
+    { q: "標準進氣濕度範圍為每公斤乾空氣含水量？", o:["1.0~2.5 g", "3.56~7.12 g", "10~15 g", "無限制"], a: 1 },
+    { q: "汽缸夾套冷卻劑液位應保持在冷卻冷凝器視窗標記的？", o:["下限", "LEVEL HOT ±1 cm", "底部", "滿溢"], a: 1 },
+    { q: "曲軸箱潤滑油液位應在視窗？", o:["底部", "中間", "頂端", "看不見"], a: 1 },
+    { q: "曲軸箱內壓應維持在？", o:["正壓", "真空 (低於大氣壓力)", "零壓", "極高壓"], a: 1 },
+    { q: "曲軸箱真空度規定不超過多少 mm 水柱？", o:["50", "150", "255", "500"], a: 2 },
+    { q: "排氣背壓靜壓限值為多少 mm 水柱？", o:["10", "100", "255", "0"], a: 2 },
+    { q: "飛輪與吸收馬達皮帶張力檢查，壓低量約為？", o:["1 mm", "12.5 mm", "50 mm", "100 mm"], a: 1 },
+    { q: "火星塞型號建議採用？", o:["Champion D16", "NGK B6", "Bosch 7", "無規定"], a: 0 },
+    { q: "火星塞間隙應設定為多少 mm？", o:["0.25", "0.51 ± 0.13", "0.76", "1.0"], a: 1 },
+    { q: "點火正時感測器間隙為多少 mm？", o:["0.01", "0.08~0.13", "0.50", "1.0"], a: 1 },
+    { q: "燃油液位在文氏管中心線下方多少英吋可產生最大 KI？", o:["0.1~0.5", "0.7~1.7", "2.0~3.0", "5.0"], a: 1 },
+    { q: "進氣溫度 (IAT) 讀取應採用哪種溫度計？", o:["水銀溫度計", "CNS 14823 規定的 RTD 或熱電耦", "酒精溫度計", "紅外線槍"], a: 1 },
+    { q: "IAT 調校對 RON 的影響是？", o:["溫度升高，RON 升高", "溫度升高，RON 降低", "無影響", "隨濕度變化"], a: 1 },
+    { q: "下列何者會導致 KI 讀數不穩定？", o:["燃料過早氣化", "氣泡", "液位波動", "以上皆是"], a: 3 },
+    { q: "類比爆震錶的歸零調整應在何種狀態？", o:["電源關閉", "電源開啟且儀錶開關於「0」", "運轉中", "最大爆震時"], a: 1 },
+    { q: "數位爆震儀的展寬 (Spread) 預設值通常為？", o:["0", "25", "50", "100"], a: 0 },
+    { q: "數位爆震儀的時間常數預設值通常為？", o:["0", "25", "50", "100"], a: 1 },
+    { q: "引擎溫機 (Warming up) 至少需時多久？", o:["10 分鐘", "30 分鐘", "1 小時", "4 小時"], a: 2 },
+    { q: "溫機最後 10 分鐘應在何種條件操作？", o:["空轉", "常用 KI 爆震條件", "怠速", "最大轉速"], a: 1 },
+    { q: "每次測試前必須確定的關鍵變數穩定，包括？", o:["轉速", "溫度", "KI", "以上皆是"], a: 3 },
+    { q: "化油器文氏管喉直徑英制值為？", o:["1/2 in.", "9/16 in.", "3/4 in.", "1 in."], a: 1 },
+    { q: "化油器選擇閥的手柄輕敲目的是？", o:["清潔", "確保閥塞不卡住", "增加壓力", "調整流速"], a: 1 },
+    { q: "汽缸高度數位計數器改變一個數字代表汽缸位移多少 mm？", o:["0.001", "0.0178", "0.1", "1.0"], a: 1 },
+    { q: "排氣管系統共振會影響？", o:["KI 讀數", "油耗", "轉速", "水溫"], a: 0 },
+    { q: "點火系統建議採用何種放電方式？", o:["白金觸點", "線圈至火星塞電子觸發電容器放電", "磁電機", "手動點火"], a: 1 },
+    { q: "引擎曲軸箱型號通常為？", o:["CFR-24", "CFR-48", "CFR-89", "2025"], a: 1 },
+    { q: "進氣溫度計型號建議為何？", o:["83C 或 135C", "20C", "50C", "100C"], a: 0 },
+    { q: "方法 A 與方法 B 的主要差異在於？", o:["引擎轉速", "燃料供給方式 (平衡液位 vs. 動態降液位)", "點火時間", "汽缸溫度"], a: 1 },
+    { q: "涵括法 (Bracketing) 至少需要幾種 PRF 摻合物？", o:["1", "2", "3", "4"], a: 1 },
+    { q: "評級試樣前，引擎應使用何者進行適合性評級？", o:["商業汽油", "TSF 摻合物", "水", "異辛烷"], a: 1 },
+    { q: "評級期間，若大氣壓力變動超過多少 kPa，需重新評級 TSF？", o:["0.1", "0.34", "0.68", "1.0"], a: 2 },
+    { q: "測試 RON 在 80.2~100 範圍，PRF 辛烷值差值上限為？", o:["1.0", "2.0", "5.0", "0.1"], a: 1 },
+    { q: "測試 RON 在 72~80 範圍，PRF 辛烷值差值上限為？", o:["2.4", "4.0", "1.0", "5.0"], a: 0 },
+    { q: "測試 RON 未滿 72 範圍，PRF 辛烷值差值上限為？", o:["2.4", "4.0", "1.0", "5.0"], a: 1 },
+    { q: "方法 A 計算辛烷值的公式採用？", o:["算術平均", "比例內插法", "幾何平均", "隨機選取"], a: 1 },
+    { q: "兩系列評級數據差值不得大於多少 ON？", o:["0.1", "0.3", "0.5", "1.0"], a: 1 },
+    { q: "方法 C 稱為？", o:["內插法", "壓縮比法", "OA 法", "視覺法"], a: 1 },
+    { q: "壓縮比法 (Method C) 評級結果需經什麼補償？", o:["溫度", "大氣壓力", "濕度", "轉速"], a: 1 },
+    { q: "大氣壓力低於標準 101.0 kPa 時，汽缸高度應？", o:["增加", "減少", "不變", "設為零"], a: 0 },
+    { q: "方法 D 採用何種儀器？", o:["氣相層析儀", "辛烷值分析儀 (OA)", "滴定儀", "折射儀"], a: 1 },
+    { q: "方法 D 測得的 KI 與燃氣比關係曲線應呈現？", o:["直線", "倒 U 型 (峰值)", "階梯型", "固定水平"], a: 1 },
+    { q: "在方法 A 中，類比爆震錶的讀數應調整至？", o:["0", "50 ± 2", "100", "隨意"], a: 1 },
+    { q: "進行 PRF 評級時，化油器冷卻系統應？", o:["開啟", "關閉", "隨意", "設為 100 ℃"], a: 1 },
+    { q: "若試樣 RON 為 95.55，應報告為？", o:["95.5", "95.6", "96", "95"], a: 1 },
+    { q: "數值修整應符合哪一標準？", o:["CNS 1217", "CNS 2925", "CNS 12614", "隨意修整"], a: 1 },
+    { q: "測試超過 100 RON 時，應先確定什麼？", o:["標準 KI", "最大轉速", "燃油溫度", "水位"], a: 0 },
+    { q: "測試酒精汽油時，乙醇含量上限為？", o:["10%", "15%", "25%", "85%"], a: 2 },
+    { q: "IAT 調校通常是用來修正？", o:["引擎磨損", "氣候與燃料特性引起的偏差", "點火時間", "壓縮比"], a: 1 },
+    { q: "當 TSF 評級結果偏高時，IAT 應？", o:["調高", "調低", "不變", "改用水冷"], a: 0 },
+    { q: "調校後的 IAT 與標準 IAT 差值不得超過？", o:["±5 ℃", "±10 ℃", "±22 ℃", "±50 ℃"], a: 2 },
+    { q: "下列何種條件下應重新評級 TSF？", o:["引擎大修後", "潤滑油更換後", "停機超過 2 小時", "以上皆是"], a: 3 },
+    { q: "試樣評級前，若預測 RON 為 92，應選擇哪種 TSF 摻合物？", o:["85.2", "93.4", "99.8", "65.1"], a: 1 },
+    { q: "方法 A 的內插公式中，KI(LRF) 代表？", o:["試樣 KI", "低辛烷值 PRF 的 KI", "高辛烷值 PRF 的 KI", "平均 KI"], a: 1 },
+    { q: "報告中若 RON 為 105.50，應報告為？", o:["105", "106", "105.5", "105.6"], a: 1 },
+    { q: "未滿 72 RON 的評級，結果報告應修整至？", o:["小數一位", "最接近的整數", "小數兩位", "固定 70"], a: 1 },
+    { q: "品質管制 (QC) 測試中，若結果超出 ARV ±2 個標準差，應？", o:["繼續測試", "調查原因並修正", "修改 ARV", "減少樣本"], a: 1 },
+    { q: "下列何者不是評級無效的原因？", o:["轉速不穩", "溫度超出公差", "KI 波動過大", "使用深色玻璃瓶存放"], a: 3 },
+    { q: "方法 B 的液位下降技術，目的是為了？", o:["節省燃料", "自動搜尋最大 KI", "降低溫度", "增加引擎負荷"], a: 1 },
+    { q: "方法 C 壓縮比法適合何種試樣？", o:["研發用高精密度試樣", "快速篩選", "含鉛汽油", "重油"], a: 1 },
+    { q: "測試 100~100.7 RON 時，僅限使用何種 PRF？", o:["100.0 與 100.7", "90 與 100", "異辛烷與甲苯", "異辛烷與鉛"], a: 0 },
+    { q: "下列何種物質進入引擎會導致 RON 被低估？", o:["空氣", "含鹵冷媒蒸氣", "水蒸氣", "氮氣"], a: 1 },
+    { q: "大氣壓力修正值詳見附錄？", o:["A", "B", "D", "H"], a: 2 },
+    { q: "IAT 溫度調整範圍限制在？", o:["±5 ℃", "±10 ℃", "±22 ℃", "無限制"], a: 2 },
+    { q: "查核燃料評級結果與 ARV 之差應落在多少範圍？", o:["統計允許值內", "固定 ±0.1", "固定 ±0.5", "無規定"], a: 0 },
+    { q: "PRF 摻合物標記為「90.0」，代表其內含異辛烷百分比為？", o:["10%", "50%", "90%", "100%"], a: 2 },
+    { q: "評級試樣時，燃氣比調整應使 KI 讀數達到？", o:["最小值", "平均值", "最大值", "零"], a: 2 },
+    { q: "數位爆震錶與類比錶的關鍵不同點在於？", o:["數位錶不需零點調整", "數位錶不需展寬調整", "數位錶較不準", "A與B皆是"], a: 3 },
+    { q: "燃料貯槽橫斷面面積不小於 3830 mm² 是為了？", o:["增加容量", "確保液位下降速率恆定", "防止揮發", "美觀"], a: 1 },
+    { q: "冷凝器視窗中的氣泡可能導致？", o:["KI 不穩定", "讀數錯誤", "液位異常波動", "以上皆是"], a: 3 },
+    { q: "辛烷值報告應保留幾位有效數字？", o:["一位", "二位", "三位", "視 RON 範圍而定"], a: 3 },
+    { q: "如果 PRF 的 KI 讀數與試樣差太多，應？", o:["更換 PRF", "修改汽缸高度", "繼續測試", "捨棄試樣"], a: 0 },
+    { q: "RON 評級公式中，KI(HRF) 代表？", o:["試樣 KI", "高辛烷值 PRF 的 KI", "低辛烷值 PRF 的 KI", "修正值"], a: 1 },
+    { q: "在 20.1.1 節中提到，85~98 RON 範圍的重複性標準差約為？", o:["0.1", "0.5", "1.0", "0.01"], a: 0 },
+    { q: "下列何者非影響 RON 精密度的因素？", o:["引擎狀態", "操作員技術", "當天天氣", "實驗室地板顏色"], a: 3 },
+    { q: "方法 D 搜尋最大 KI 時，泵的初始設定應？", o:["設為最大", "依操作經驗設定", "關閉", "固定 10"], a: 1 },
+    { q: "測試 RON > 100 時，峰間電壓 (peak-to-peak) 規定為？", o:["0.05~0.1 V", "0.08~0.18 V", "1.0~2.0 V", "無規定"], a: 1 },
+    { q: "當方法 A、B、C 結果衝突時，以哪一方法為準？", o:["方法 A (仲裁法)", "方法 B", "方法 C", "方法 D"], a: 0 },
+    { q: "引擎維護中，「汽缸大修 (top overhaul)」的主要內容是？", o:["氣門修復與燃燒室清潔", "換輪胎", "修理吸收馬達", "換儀錶面板"], a: 0 },
+    { q: "曲軸箱檢驗建議間隔時間為多少小時？", o:["100", "500", "2000 或每兩年", "10000"], a: 2 },
+    { q: "更換曲軸箱潤滑油的建議間隔時間為多少小時？", o:["10", "50", "500", "2000"], a: 1 },
+    { q: "清潔燃燒室沉積物的有效方式為？", o:["吹碳技術 (carbon blasting)", "噴水", "手動刮除", "高速空轉"], a: 0 },
+    { q: "汽缸內徑最大磨損超過多少應更換？", o:["0.01 mm", "0.152 mm", "1 mm", "5 mm"], a: 1 },
+    { q: "汽缸失圓度超過多少應更換？", o:["0.01 mm", "0.064 mm", "0.5 mm", "1 mm"], a: 1 },
+    { q: "氣門導管內徑超過磨損限值應？", o:["磨光", "更換", "繼續使用", "塗油"], a: 1 },
+    { q: "研磨氣門座的角度通常為？", o:["30°", "45°", "60°", "90°"], a: 1 },
+    { q: "氣門座寬度不應超過？", o:["0.5 mm", "1.778 mm", "5 mm", "10 mm"], a: 1 },
+    { q: "氣門旋轉速度在運轉中應大約為？", o:["100 rpm", "1~2 rpm", "不旋轉", "10 rpm"], a: 1 },
+    { q: "活塞環間隙檢查中，若間隙超出極限應？", o:["焊接", "更換", "磨薄", "使用墊片"], a: 1 },
+    { q: "飛輪同步電動機負荷減至最小的檢查方式是？", o:["加速", "減速", "調整至上止點 tdc", "停止冷卻"], a: 2 },
+    { q: "安裝爆震拾音器時的扭矩應為？", o:["10 N-m", "41 N-m", "100 N-m", "5 N-m"], a: 1 },
+    { q: "汽缸螺栓扭矩設定見？", o:["附錄 A", "表 B.1", "圖 1", "第 12 節"], a: 1 },
+    { q: "安全切斷檢查中，高冷卻劑溫度開關應在多久內動作？", o:["10 秒", "1 分鐘", "5 分鐘", "10 分鐘"], a: 1 },
+    { q: "低油壓開關的安全設定點通常為？", o:["10 kPa", "138 kPa", "500 kPa", "1000 kPa"], a: 1 },
+    { q: "皮帶更換的週期建議為？", o:["每年", "視張力與磨損情況而定", "每日", "十年"], a: 1 },
+    { q: "燃油系統過濾網應？", o:["每日更換", "定期檢查並清除雜質", "拆除", "加熱"], a: 1 },
+    { q: "引擎大修後應進行？", o:["試車", "標準化評級", "PRF 校正", "以上皆是"], a: 3 },
+    { q: "汽缸高度數位計數器的連動裝置為？", o:["撓性電纜", "鏈條", "齒輪", "藍牙"], a: 0 },
+    { q: "汽缸夾套中的水垢會影響？", o:["傳熱效能", "評級結果", "汽缸壽命", "以上皆是"], a: 3 },
+    { q: "清洗氣門導管應使用？", o:["強酸", "專用溶劑與毛刷", "砂紙", "汽油"], a: 1 },
+    { q: "活塞頂部積碳過厚會導致？", o:["壓縮比改變", "爆震特性異常", "提前點火", "以上皆是"], a: 3 },
+    { q: "潤滑油濾芯 (filter) 應？", o:["十年換一次", "每次換油時同時更換", "洗洗再用", "不需安裝"], a: 1 },
+    { q: "汽缸高度數位計數器選擇旋鈕在正常測試時應設為？", o:["0", "1", "2", "3"], a: 1 },
+    { q: "當氣門密封不良時，KI 讀數會？", o:["變大", "變小且不穩", "不變", "消失"], a: 1 },
+    { q: "冷卻系統漏水會導致？", o:["汽缸過熱", "KI 劇增", "引擎停機", "以上皆是"], a: 3 },
+    { q: "數位爆震計前面的操作/零/儀錶開關主要用於？", o:["校正與操作切換", "調整轉速", "調整水溫", "燃料切換"], a: 0 },
+    { q: "燃料貯槽視窗清潔應使用？", o:["鋼刷", "不傷塑膠的溶劑與軟布", "強鹼", "噴砂"], a: 1 },
+    { q: "引擎地基 (基礎) 應？", o:["堅固且水平", "會震動沒關係", "設在木板上", "任意放置"], a: 0 },
+    { q: "控制器面板上的油壓指示燈熄滅通常代表？", o:["正常", "油壓過低或開關故障", "油太多", "引擎超速"], a: 1 },
+    { q: "引擎排氣管中的積水應？", o:["留著", "定期排放", "加熱蒸發", "不理會"], a: 1 },
+    { q: "點火線圈故障會導致？", o:["無法點火", "KI 不穩", "失火", "以上皆是"], a: 3 },
+    { q: "皮帶輪不對齊會導致？", o:["皮帶過熱與異響", "轉速變快", "減少油耗", "增加辛烷值"], a: 0 },
+    { q: "曲軸箱通氣器 (Breather) 阻塞會導致？", o:["內壓升高", "漏油", "KI 異常", "以上皆是"], a: 3 },
+    { q: "燃料計量噴嘴堵塞應？", o:["用鋼絲捅", "使用超音波清洗", "更換", "B與C皆是"], a: 3 },
+    { q: "飛輪定位刻度模糊應？", o:["重新塗漆標記", "換引擎", "不管它", "用猜的"], a: 0 },
+    { q: "數位計數器顯示 000 代表？", o:["最高壓縮比", "最低壓縮比", "引擎毀損", "正常狀態"], a: 1 },
+    { q: "化油器密封墊片劣化會導致？", o:["漏油", "漏氣", "燃氣比不穩", "以上皆是"], a: 3 },
+    { q: "爆震儀電源保險絲燒斷應？", o:["用銅線繞", "檢查原因並更換同規格保險絲", "跳過保險絲", "關機"], a: 1 },
+    { q: "進氣加熱器接頭鬆脫會導致？", o:["IAT 下降", "RON 偏低", "無法完成標準化", "以上皆是"], a: 3 },
+    { q: "引擎噪聲過大可能來自？", o:["氣門間隙過大", "軸承磨損", "活塞敲缸", "以上皆是"], a: 3 },
+    { q: "每次試驗結束後應？", o:["排空燃料", "清潔環境", "填寫記錄", "以上皆是"], a: 3 },
+    { q: "備用零件應存放於？", o:["乾燥、清潔處", "戶外", "高溫處", "水中"], a: 0 },
+    { q: "本試驗法對操作員的要求是？", o:["需經過專業培訓與考核", "隨便誰都可以", "只要會開車就行", "僅限化學博士"], a: 0 },
+    { q: "維護記錄表應包含？", o:["日期", "維護內容", "操作時數", "以上皆是"], a: 3 },
+    { q: "引擎防護罩的目的是？", o:["防止人員接觸旋轉部件", "隔音", "美觀", "A與B皆是"], a: 3 },
+    { q: "使用 TSF 校正時發現偏差持續增大，應？", o:["停止測試並檢修引擎", "修改數據", "忽視偏差", "增加 IAT"], a: 0 },
+    { q: "本標準 CNS 12011 與哪一個國際標準對應？", o:["ISO 9001", "ASTM D2699", "ASTM D2700", "IP 34"], a: 1 },
+    { q: "研究法辛烷值測試的最終目的是？", o:["確保燃料在引擎中的抗爆震性能符合規範", "提高油價", "減少進口", "研發新型馬達"], a: 0 }
+];
+
+// 全域變數
+let rawDataBlocks =[];
+let methodAReports =[];
+let methodCReports =[];
+let db_ON_CR_DIR =[];
+let currentUser = null;
+
+// --- 初始化 ---
+window.onload = function() {
+    initAuth();
+    // 預設日期
+    document.getElementById('testDate').valueAsDate = new Date();
+    document.getElementById('checkDate').valueAsDate = new Date();
+    
+    parseDatabases();
+    renderChecklist();
+};
+
+// --- 使用者認證與權限 ---
+function initAuth() {
+    let users = JSON.parse(localStorage.getItem('ron_users'));
+    if (!users || users.length === 0) {
+        users =[{user: 'admin', pass: 'admin', isAdmin: true}];
+        localStorage.setItem('ron_users', JSON.stringify(users));
+    }
+}
+
+function togglePasswordVisibility(id) {
+    let input = document.getElementById(id);
+    input.type = input.type === "password" ? "text" : "password";
+}
+
+function attemptLogin() {
+    let u = document.getElementById('loginUser').value;
+    let p = document.getElementById('loginPass').value;
+    let users = JSON.parse(localStorage.getItem('ron_users'));
+    
+    let found = users.find(x => x.user === u && x.pass === p);
+    if (found) {
+        currentUser = found;
+        document.getElementById('login-overlay').style.display = 'none';
+        document.getElementById('app-content').style.display = 'block';
+        document.getElementById('currentUserDisplay').innerText = `User: ${u}`;
+        
+        document.getElementById('operatorName').value = u; 
+        addRawDataBlock(); 
+        updateTSF_PRFs();
+        
+        if (found.isAdmin) {
+            document.getElementById('btnAdminPanel').style.display = 'inline-block';
+        }
+    } else {
+        document.getElementById('loginError').innerText = "帳號或密碼錯誤";
+    }
+}
+
+function logout() {
+    location.reload();
+}
+
+function openAdminPanel() {
+    let modal = new bootstrap.Modal(document.getElementById('adminModal'));
+    loadUserList();
+    modal.show();
+}
+
+function loadUserList() {
+    let users = JSON.parse(localStorage.getItem('ron_users'));
+    let ul = document.getElementById('userList');
+    ul.innerHTML = '';
+    users.forEach((u, idx) => {
+        let btnDel = (u.user === 'admin') ? '' : `<button class="btn btn-sm btn-danger float-end" onclick="delUser(${idx})">刪除</button>`;
+        let li = document.createElement('li');
+        li.className = 'list-group-item';
+        li.innerHTML = `${u.user} ${u.isAdmin ? '(Admin)' : ''} ${btnDel}`;
+        ul.appendChild(li);
+    });
+}
+
+function addUser() {
+    let u = document.getElementById('newUsername').value;
+    let p = document.getElementById('newPassword').value;
+    if(!u || !p) return;
+    
+    let users = JSON.parse(localStorage.getItem('ron_users'));
+    if(users.some(x => x.user === u)) { alert("帳號已存在"); return; }
+    
+    users.push({user: u, pass: p, isAdmin: false});
+    localStorage.setItem('ron_users', JSON.stringify(users));
+    loadUserList();
+    document.getElementById('newUsername').value = '';
+    document.getElementById('newPassword').value = '';
+}
+
+function delUser(idx) {
+    if(!confirm("確定刪除?")) return;
+    let users = JSON.parse(localStorage.getItem('ron_users'));
+    users.splice(idx, 1);
+    localStorage.setItem('ron_users', JSON.stringify(users));
+    loadUserList();
+}
+
+// --- 擴充：方法 A-2 切換功能 ---
+function toggleMethodA2() {
+    let wrap = document.getElementById('methodA2Wrapper');
+    wrap.style.display = wrap.style.display === 'none' ? 'block' : 'none';
+}
+
+// --- 數據持久化功能 (試驗紀錄 另存新檔/開啟舊檔) ---
+
+function collectTestData() {
+    const staticData = {
+        date: document.getElementById('testDate').value,
+        operator: document.getElementById('operatorName').value,
+        atmPressure: document.getElementById('atmPressureInput').value,
+        atmInHg: document.getElementById('atmInHg').value,
+        stdIAT: document.getElementById('stdIAT').value,
+        compIAT: document.getElementById('compIAT').value,
+        heatScale: document.getElementById('heatScale').value,
+        deltaTemp: document.getElementById('deltaTemp').value,
+        estON: document.getElementById('estON').value,
+        prfLow: document.getElementById('prfLow').value,
+        prfHigh: document.getElementById('prfHigh').value,
+        estON2: document.getElementById('estON2').value,
+        prfLow2: document.getElementById('prfLow2').value,
+        prfHigh2: document.getElementById('prfHigh2').value,
+        tsfON: document.getElementById('tsfON').value,
+        tsfPrfLow: document.getElementById('tsfPrfLow').value,
+        tsfPrfHigh: document.getElementById('tsfPrfHigh').value,
+        tsfSpread: document.getElementById('tsfSpread').value,
+        tsfMR: document.getElementById('tsfMR').value,
+        tsfExpVal: document.getElementById('tsfExpVal').value,
+        tsfRepVal: document.getElementById('tsfRepVal').value,
+        repSampleName: document.getElementById('repSampleName').value,
+        repON1: document.getElementById('repON1').value,
+        repON2: document.getElementById('repON2').value,
+        repAvg: document.getElementById('repAvg').value,
+        repR: document.getElementById('repR').value,
+        repRm: document.getElementById('repRm').value,
+        repPercent: document.getElementById('repPercent').value,
+        repVerdict: document.getElementById('repVerdict').value
+    };
+
+    const methodCRows =[];
+    document.querySelectorAll('#methodC_Table tbody tr').forEach(tr => {
+        methodCRows.push({
+            id: tr.cells[0].innerText,
+            sample: tr.cells[1].innerText,
+            onCR: tr.cells[2].innerText,
+            onDIR: tr.cells[3].innerText
+        });
+    });
+
+    const tsfBlocks =[];
+    document.querySelectorAll('.tsf-record-block').forEach(blk => {
+        tsfBlocks.push({
+            sampleName: blk.querySelector('.sample-name-input').value,
+            prfH: blk.querySelector('.val-prf-h').innerText,
+            prfL: blk.querySelector('.val-prf-l').innerText,
+            ski1: blk.querySelector('.sample-ki-1').value,
+            hki1: blk.querySelector('.prf-h-ki-1').value,
+            lki1: blk.querySelector('.prf-l-ki-1').value,
+            ski2: blk.querySelector('.sample-ki-2').value,
+            lki2: blk.querySelector('.prf-l-ki-2').value,
+            hki2: blk.querySelector('.prf-h-ki-2').value,
+            sfl1: blk.querySelector('.sample-fl-1').value,
+            hfl1: blk.querySelector('.prf-h-fl-1').value,
+            lfl1: blk.querySelector('.prf-l-fl-1').value,
+            sfl2: blk.querySelector('.sample-fl-2').value,
+            lfl2: blk.querySelector('.prf-l-fl-2').value,
+            hfl2: blk.querySelector('.prf-h-fl-2').value,
+            resON1: blk.querySelector('.res-on1').innerText,
+            resStab1: blk.querySelector('.res-stab1').innerText,
+            resON2: blk.querySelector('.res-on2').innerText,
+            resStab2: blk.querySelector('.res-stab2').innerText,
+            resONAvg: blk.querySelector('.res-onavg').innerText,
+            resStabAvg: blk.querySelector('.res-stabavg').innerText,
+            finalON: blk.dataset.finalON,
+            reportON: blk.dataset.reportON,
+            stab: blk.dataset.stab
+        });
+    });
+
+    const rawBlocks =[];
+    document.querySelectorAll('#rawDataContainer .raw-data-block:not(.tsf-record-block)').forEach(blk => {
+        rawBlocks.push({
+            id: blk.querySelector('.block-id-span').innerText,
+            sampleName: blk.querySelector('.sample-name-input').value,
+            prfH: blk.querySelector('.val-prf-h').innerText,
+            prfL: blk.querySelector('.val-prf-l').innerText,
+            ski1: blk.querySelector('.sample-ki-1').value,
+            hki1: blk.querySelector('.prf-h-ki-1').value,
+            lki1: blk.querySelector('.prf-l-ki-1').value,
+            ski2: blk.querySelector('.sample-ki-2').value,
+            lki2: blk.querySelector('.prf-l-ki-2').value,
+            hki2: blk.querySelector('.prf-h-ki-2').value,
+            sfl1: blk.querySelector('.sample-fl-1').value,
+            hfl1: blk.querySelector('.prf-h-fl-1').value,
+            lfl1: blk.querySelector('.prf-l-fl-1').value,
+            sfl2: blk.querySelector('.sample-fl-2').value,
+            lfl2: blk.querySelector('.prf-l-fl-2').value,
+            hfl2: blk.querySelector('.prf-h-fl-2').value,
+            resON1: blk.querySelector('.res-on1').innerText,
+            resStab1: blk.querySelector('.res-stab1').innerText,
+            resON2: blk.querySelector('.res-on2').innerText,
+            resStab2: blk.querySelector('.res-stab2').innerText,
+            resONAvg: blk.querySelector('.res-onavg').innerText,
+            resStabAvg: blk.querySelector('.res-stabavg').innerText,
+            finalON: blk.dataset.finalON,
+            stab: blk.dataset.stab
+        });
+    });
+
+    const rawBlocks2 =[];
+    document.querySelectorAll('#rawDataContainer2 .raw-data-block').forEach(blk => {
+        rawBlocks2.push({
+            id: blk.querySelector('.block-id-span').innerText,
+            sampleName: blk.querySelector('.sample-name-input').value,
+            prfH: blk.querySelector('.val-prf-h').innerText,
+            prfL: blk.querySelector('.val-prf-l').innerText,
+            ski1: blk.querySelector('.sample-ki-1').value,
+            hki1: blk.querySelector('.prf-h-ki-1').value,
+            lki1: blk.querySelector('.prf-l-ki-1').value,
+            ski2: blk.querySelector('.sample-ki-2').value,
+            lki2: blk.querySelector('.prf-l-ki-2').value,
+            hki2: blk.querySelector('.prf-h-ki-2').value,
+            sfl1: blk.querySelector('.sample-fl-1').value,
+            hfl1: blk.querySelector('.prf-h-fl-1').value,
+            lfl1: blk.querySelector('.prf-l-fl-1').value,
+            sfl2: blk.querySelector('.sample-fl-2').value,
+            lfl2: blk.querySelector('.prf-l-fl-2').value,
+            hfl2: blk.querySelector('.prf-h-fl-2').value,
+            resON1: blk.querySelector('.res-on1').innerText,
+            resStab1: blk.querySelector('.res-stab1').innerText,
+            resON2: blk.querySelector('.res-on2').innerText,
+            resStab2: blk.querySelector('.res-stab2').innerText,
+            resONAvg: blk.querySelector('.res-onavg').innerText,
+            resStabAvg: blk.querySelector('.res-stabavg').innerText,
+            finalON: blk.dataset.finalON,
+            stab: blk.dataset.stab
+        });
+    });
+
+    const methodARows =[];
+    document.querySelectorAll('#methodA_Table tbody tr').forEach(tr => {
+        methodARows.push({
+            id: tr.cells[0].innerText,
+            date: tr.cells[1].innerText,
+            sample: tr.cells[2].innerText,
+            avg: tr.cells[3].innerText,
+            report: tr.cells[4].innerText,
+            stab: tr.cells[5].innerText
+        });
+    });
+
+    const repRows =[];
+    document.querySelectorAll('#repeatabilityTable tbody tr').forEach(tr => {
+        repRows.push({
+            id: tr.cells[0].innerText,
+            date: tr.cells[1].innerText,
+            sample: tr.cells[2].innerText,
+            on1: tr.cells[3].innerText,
+            on2: tr.cells[4].innerText,
+            avg: tr.cells[5].innerText,
+            r: tr.cells[6].innerText,
+            rm: tr.cells[7].innerText,
+            verdict: tr.cells[8].innerText,
+            percent: tr.cells[9].innerText
+        });
+    });
+
+    // 合併採集設備查檢表資料
+    const checklistData = {
+        date: document.getElementById('checkDate').value,
+        person: document.getElementById('checkPerson').value,
+        items:[]
+    };
+    document.querySelectorAll('#checkListBody tr').forEach((row, idx) => {
+        if (row.classList.contains('checklist-header')) return;
+        const okRadio = row.querySelector(`input[name^="chk-"][value="OK"]`);
+        const ngRadio = row.querySelector(`input[name^="chk-"][value="NG"]`);
+        const noteInput = row.querySelector('input[type="text"]');
+        if (okRadio) {
+            checklistData.items.push({
+                rowIndex: idx,
+                radioName: okRadio.name,
+                isOK: okRadio.checked,
+                isNG: ngRadio.checked,
+                note: noteInput ? noteInput.value : ""
+            });
+        }
+    });
+
+    return { staticData, methodCRows, tsfBlocks, rawBlocks, rawBlocks2, methodARows, repRows, checklistData };
+}
+
+function saveToJSONFile() {
+    if (!currentUser) { alert("請先登入"); return; }
+    
+    alert("預設儲存資料夾為本機之下載資料夾。如果將瀏覽器設定中”下載前詢問每個檔案的儲存位置”功能開啓，則可指定儲存位置。\n\n註：本次儲存將同時儲存「試驗紀錄」與「設備查檢表」之數據。");
+    
+    const fullData = collectTestData();
+    const dateStr = document.getElementById('testDate').value || new Date().toISOString().slice(0,10);
+    const defaultName = `RON_Test_Record_${dateStr}.json`;
+    
+    let filename = prompt("請輸入檔案名稱 (可包含路徑建議，視瀏覽器而定):", defaultName);
+    if (filename === null) return; 
+    if (!filename) filename = defaultName;
+    if (!filename.endsWith(".json")) filename += ".json";
+
+    const jsonStr = JSON.stringify(fullData, null, 2);
+    const blob = new Blob([jsonStr], {type: "application/json"});
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function triggerFileLoad() {
+    document.getElementById('jsonFileInput').click();
+}
+
+function handleFileSelect(input) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            populateTestData(data);
+            alert("檔案載入成功！（已一併還原設備查檢表數據）");
+        } catch (err) {
+            alert("檔案格式錯誤或損毀: " + err.message);
+            console.error(err);
+        }
+    };
+    reader.readAsText(file);
+    input.value = ''; 
+}
+
+function populateTestData(data) {
+    document.getElementById('tsfRecordContainer').innerHTML = '';
+    document.getElementById('rawDataContainer').innerHTML = '';
+    document.getElementById('rawDataContainer2').innerHTML = '';
+    document.querySelector('#methodA_Table tbody').innerHTML = '';
+    document.querySelector('#methodC_Table tbody').innerHTML = '';
+    document.querySelector('#repeatabilityTable tbody').innerHTML = '';
+
+    if (data.staticData) {
+        document.getElementById('testDate').value = data.staticData.date;
+        document.getElementById('operatorName').value = data.staticData.operator;
+        document.getElementById('atmPressureInput').value = data.staticData.atmPressure;
+        document.getElementById('atmInHg').value = data.staticData.atmInHg;
+        document.getElementById('stdIAT').value = data.staticData.stdIAT;
+        document.getElementById('compIAT').value = data.staticData.compIAT;
+        document.getElementById('heatScale').value = data.staticData.heatScale;
+        document.getElementById('deltaTemp').value = data.staticData.deltaTemp;
+        document.getElementById('estON').value = data.staticData.estON;
+        document.getElementById('prfLow').value = data.staticData.prfLow;
+        document.getElementById('prfHigh').value = data.staticData.prfHigh;
+        
+        if (data.staticData.estON2 !== undefined) document.getElementById('estON2').value = data.staticData.estON2;
+        if (data.staticData.prfLow2 !== undefined) document.getElementById('prfLow2').value = data.staticData.prfLow2;
+        if (data.staticData.prfHigh2 !== undefined) document.getElementById('prfHigh2').value = data.staticData.prfHigh2;
+        
+        document.getElementById('tsfON').value = data.staticData.tsfON;
+        document.getElementById('tsfPrfLow').value = data.staticData.tsfPrfLow;
+        document.getElementById('tsfPrfHigh').value = data.staticData.tsfPrfHigh;
+        document.getElementById('tsfSpread').value = data.staticData.tsfSpread;
+        document.getElementById('tsfMR').value = data.staticData.tsfMR;
+        document.getElementById('tsfExpVal').value = data.staticData.tsfExpVal;
+        document.getElementById('tsfRepVal').value = data.staticData.tsfRepVal;
+
+        document.getElementById('repSampleName').value = data.staticData.repSampleName;
+        document.getElementById('repON1').value = data.staticData.repON1;
+        document.getElementById('repON2').value = data.staticData.repON2;
+        document.getElementById('repAvg').value = data.staticData.repAvg;
+        document.getElementById('repR').value = data.staticData.repR;
+        document.getElementById('repRm').value = data.staticData.repRm;
+        document.getElementById('repPercent').value = data.staticData.repPercent;
+        document.getElementById('repVerdict').value = data.staticData.repVerdict;
+        
+        calcAtm();
+    }
+
+    const tbodyC = document.querySelector('#methodC_Table tbody');
+    if (data.methodCRows) {
+        data.methodCRows.forEach(row => {
+            let tr = tbodyC.insertRow();
+            tr.innerHTML = `<td>${row.id}</td><td>${row.sample}</td><td>${row.onCR}</td><td>${row.onDIR}</td><td class="no-print"><button class="btn btn-sm btn-danger py-0" onclick="deleteRow(this)">-</button></td>`;
+        });
+    }
+
+    const containerTSF = document.getElementById('tsfRecordContainer');
+    if (data.tsfBlocks) {
+        data.tsfBlocks.forEach(blkData => {
+            addTSFRecordBlock();
+            let blk = containerTSF.lastElementChild;
+            blk.querySelector('.sample-name-input').value = blkData.sampleName;
+            blk.querySelector('.val-prf-h').innerText = blkData.prfH;
+            blk.querySelector('.val-prf-l').innerText = blkData.prfL;
+            blk.querySelector('.sample-ki-1').value = blkData.ski1;
+            blk.querySelector('.prf-h-ki-1').value = blkData.hki1;
+            blk.querySelector('.prf-l-ki-1').value = blkData.lki1;
+            blk.querySelector('.sample-ki-2').value = blkData.ski2;
+            blk.querySelector('.prf-l-ki-2').value = blkData.lki2;
+            blk.querySelector('.prf-h-ki-2').value = blkData.hki2;
+            blk.querySelector('.sample-fl-1').value = blkData.sfl1 || '';
+            blk.querySelector('.prf-h-fl-1').value = blkData.hfl1 || '';
+            blk.querySelector('.prf-l-fl-1').value = blkData.lfl1 || '';
+            blk.querySelector('.sample-fl-2').value = blkData.sfl2 || '';
+            blk.querySelector('.prf-l-fl-2').value = blkData.lfl2 || '';
+            blk.querySelector('.prf-h-fl-2').value = blkData.hfl2 || '';
+            blk.querySelector('.res-on1').innerText = blkData.resON1;
+            blk.querySelector('.res-stab1').innerText = blkData.resStab1;
+            blk.querySelector('.res-on2').innerText = blkData.resON2;
+            blk.querySelector('.res-stab2').innerText = blkData.resStab2;
+            blk.querySelector('.res-onavg').innerText = blkData.resONAvg;
+            blk.querySelector('.res-stabavg').innerText = blkData.resStabAvg;
+            
+            blk.dataset.finalON = blkData.finalON;
+            blk.dataset.reportON = blkData.reportON;
+            blk.dataset.stab = blkData.stab;
+        });
+    }
+
+    const containerRaw = document.getElementById('rawDataContainer');
+    if (data.rawBlocks) {
+        data.rawBlocks.forEach(blkData => {
+            addRawDataBlock();
+            let blk = containerRaw.lastElementChild;
+            blk.querySelector('.block-id-span').innerText = blkData.id;
+            blk.querySelector('.sample-name-input').value = blkData.sampleName;
+            blk.querySelector('.val-prf-h').innerText = blkData.prfH;
+            blk.querySelector('.val-prf-l').innerText = blkData.prfL;
+            blk.querySelector('.sample-ki-1').value = blkData.ski1;
+            blk.querySelector('.prf-h-ki-1').value = blkData.hki1;
+            blk.querySelector('.prf-l-ki-1').value = blkData.lki1;
+            blk.querySelector('.sample-ki-2').value = blkData.ski2;
+            blk.querySelector('.prf-l-ki-2').value = blkData.lki2;
+            blk.querySelector('.prf-h-ki-2').value = blkData.hki2;
+            blk.querySelector('.sample-fl-1').value = blkData.sfl1 || '';
+            blk.querySelector('.prf-h-fl-1').value = blkData.hfl1 || '';
+            blk.querySelector('.prf-l-fl-1').value = blkData.lfl1 || '';
+            blk.querySelector('.sample-fl-2').value = blkData.sfl2 || '';
+            blk.querySelector('.prf-l-fl-2').value = blkData.lfl2 || '';
+            blk.querySelector('.prf-h-fl-2').value = blkData.hfl2 || '';
+            blk.querySelector('.res-on1').innerText = blkData.resON1;
+            blk.querySelector('.res-stab1').innerText = blkData.resStab1;
+            blk.querySelector('.res-on2').innerText = blkData.resON2;
+            blk.querySelector('.res-stab2').innerText = blkData.resStab2;
+            blk.querySelector('.res-onavg').innerText = blkData.resONAvg;
+            blk.querySelector('.res-stabavg').innerText = blkData.resStabAvg;
+            
+            blk.dataset.finalON = blkData.finalON;
+            blk.dataset.stab = blkData.stab;
+        });
+    } else {
+        addRawDataBlock();
+    }
+
+    const containerRaw2 = document.getElementById('rawDataContainer2');
+    if (data.rawBlocks2 && data.rawBlocks2.length > 0) {
+        document.getElementById('methodA2Wrapper').style.display = 'block';
+        data.rawBlocks2.forEach(blkData => {
+            addRawDataBlock2();
+            let blk = containerRaw2.lastElementChild;
+            blk.querySelector('.block-id-span').innerText = blkData.id;
+            blk.querySelector('.sample-name-input').value = blkData.sampleName;
+            blk.querySelector('.val-prf-h').innerText = blkData.prfH;
+            blk.querySelector('.val-prf-l').innerText = blkData.prfL;
+            blk.querySelector('.sample-ki-1').value = blkData.ski1;
+            blk.querySelector('.prf-h-ki-1').value = blkData.hki1;
+            blk.querySelector('.prf-l-ki-1').value = blkData.lki1;
+            blk.querySelector('.sample-ki-2').value = blkData.ski2;
+            blk.querySelector('.prf-l-ki-2').value = blkData.lki2;
+            blk.querySelector('.prf-h-ki-2').value = blkData.hki2;
+            blk.querySelector('.sample-fl-1').value = blkData.sfl1 || '';
+            blk.querySelector('.prf-h-fl-1').value = blkData.hfl1 || '';
+            blk.querySelector('.prf-l-fl-1').value = blkData.lfl1 || '';
+            blk.querySelector('.sample-fl-2').value = blkData.sfl2 || '';
+            blk.querySelector('.prf-l-fl-2').value = blkData.lfl2 || '';
+            blk.querySelector('.prf-h-fl-2').value = blkData.hfl2 || '';
+            blk.querySelector('.res-on1').innerText = blkData.resON1;
+            blk.querySelector('.res-stab1').innerText = blkData.resStab1;
+            blk.querySelector('.res-on2').innerText = blkData.resON2;
+            blk.querySelector('.res-stab2').innerText = blkData.resStab2;
+            blk.querySelector('.res-onavg').innerText = blkData.resONAvg;
+            blk.querySelector('.res-stabavg').innerText = blkData.resStabAvg;
+            
+            blk.dataset.finalON = blkData.finalON;
+            blk.dataset.stab = blkData.stab;
+        });
+    }
+
+    const tbodyA = document.querySelector('#methodA_Table tbody');
+    methodAReports =[]; 
+    if (data.methodARows) {
+        data.methodARows.forEach(row => {
+            let tr = tbodyA.insertRow();
+            if (String(row.id).includes('TSF')) {
+                tr.className = 'tsf-report-row';
+            }
+            tr.innerHTML = `<td>${row.id}</td><td>${row.date}</td><td>${row.sample}</td><td>${row.avg}</td><td>${row.report}</td><td>${row.stab}</td><td class="no-print"><button class="btn btn-sm btn-danger py-0" onclick="deleteRow(this); renumberMethodA();">-</button></td>`;
+            methodAReports.push(row);
+        });
+    }
+
+    const tbodyRep = document.querySelector('#repeatabilityTable tbody');
+    if (data.repRows) {
+        data.repRows.forEach(row => {
+            let tr = tbodyRep.insertRow();
+            let vColor = (row.verdict === "符合") ? "text-success fw-bold" : "text-danger fw-bold";
+            tr.innerHTML = `<td>${row.id}</td><td>${row.date}</td><td>${row.sample}</td><td>${row.on1}</td><td>${row.on2}</td><td>${row.avg}</td><td>${row.r}</td><td>${row.rm}</td><td class="${vColor}">${row.verdict}</td><td>${row.percent}</td><td class="no-print"><button class="btn btn-sm btn-danger py-0" onclick="deleteRow(this); renumberRepeatability();">-</button></td>`;
+        });
+    }
+
+    if (data.checklistData) {
+        populateChecklistData(data.checklistData);
+    } else {
+        clearChecklistPage(true);
+    }
+}
+
+function clearTestPage() {
+    if(!confirm("確定要清除本頁面(試驗紀錄)所有數據嗎？此動作無法復原。")) return;
+    
+    const inputs = document.querySelectorAll('#test input');
+    inputs.forEach(i => {
+        if(i.type !== 'button' && i.type !== 'submit' && i.id !== 'operatorName') {
+            i.value = '';
+        }
+    });
+    
+    document.querySelector('#methodC_Table tbody').innerHTML = '';
+    document.querySelector('#methodA_Table tbody').innerHTML = '';
+    document.querySelector('#repeatabilityTable tbody').innerHTML = '';
+    document.getElementById('tsfRecordContainer').innerHTML = '';
+    document.getElementById('rawDataContainer').innerHTML = '';
+    document.getElementById('rawDataContainer2').innerHTML = '';
+    
+    document.getElementById('atmInHg').value = '';
+    document.getElementById('stdIAT').value = '';
+    document.getElementById('deltaTemp').value = '';
+    document.getElementById('correctionVals').innerText = '-- / --';
+    
+    document.getElementById('val_C_CR_Lab').innerText = '--';
+    document.getElementById('val_C_CR_Std').innerText = '--';
+    document.getElementById('val_C_ON_CR').innerText = '--';
+    document.getElementById('val_C_DIR_Lab').innerText = '--';
+    document.getElementById('val_C_DIR_Std').innerText = '--';
+    document.getElementById('val_C_ON_DIR').innerText = '--';
+
+    addRawDataBlock(); 
+    document.getElementById('testDate').valueAsDate = new Date();
+    document.getElementById('tsfON').value = "96.9";
+    updateTSF_PRFs();
+    
+    methodAReports =[];
+    methodCReports =[];
+}
+
+// ---------------- 查檢表專用功能區 ----------------
+
+function saveChecklistData() {
+    if (!currentUser) { alert("請先登入"); return; }
+
+    alert("預設儲存資料夾為本機之下載資料夾。如果將瀏覽器設定中”下載前詢問每個檔案的儲存位置”功能開啓，則可指定儲存位置。");
+
+    const checklistData = {
+        date: document.getElementById('checkDate').value,
+        person: document.getElementById('checkPerson').value,
+        items:[]
+    };
+
+    const rows = document.querySelectorAll('#checkListBody tr');
+    rows.forEach((row, idx) => {
+        if (row.classList.contains('checklist-header')) return;
+        
+        const okRadio = row.querySelector(`input[name^="chk-"][value="OK"]`);
+        const ngRadio = row.querySelector(`input[name^="chk-"][value="NG"]`);
+        const noteInput = row.querySelector('input[type="text"]');
+        
+        if (okRadio) {
+            checklistData.items.push({
+                rowIndex: idx,
+                radioName: okRadio.name,
+                isOK: okRadio.checked,
+                isNG: ngRadio.checked,
+                note: noteInput ? noteInput.value : ""
+            });
+        }
+    });
+
+    const dateStr = document.getElementById('checkDate').value || new Date().toISOString().slice(0,10);
+    const defaultName = `RON_Check_List_${dateStr}.json`;
+    
+    let filename = prompt("請輸入檔案名稱 (可包含路徑建議，視瀏覽器而定):", defaultName);
+    if (filename === null) return; 
+    if (!filename) filename = defaultName;
+    if (!filename.endsWith(".json")) filename += ".json";
+
+    const jsonStr = JSON.stringify({ checklistData }, null, 2);
+    const blob = new Blob([jsonStr], {type: "application/json"});
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function triggerChecklistLoad() {
+    document.getElementById('checklistFileInput').click();
+}
+
+function handleChecklistFileSelect(input) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            if(data.checklistData) populateChecklistData(data.checklistData);
+            else populateChecklistData(data); // 相容舊格式
+            alert("查檢表檔案載入成功！");
+        } catch (err) {
+            alert("檔案格式錯誤或損毀: " + err.message);
+            console.error(err);
+        }
+    };
+    reader.readAsText(file);
+    input.value = ''; 
+}
+
+function populateChecklistData(data) {
+    clearChecklistPage(true);
+
+    if (data.date) document.getElementById('checkDate').value = data.date;
+    if (data.person) document.getElementById('checkPerson').value = data.person;
+
+    if (data.items) {
+        data.items.forEach(item => {
+            const okRadio = document.querySelector(`input[name="${item.radioName}"][value="OK"]`);
+            const ngRadio = document.querySelector(`input[name="${item.radioName}"][value="NG"]`);
+            
+            if (okRadio && item.isOK) okRadio.checked = true;
+            if (ngRadio && item.isNG) ngRadio.checked = true;
+
+            if (okRadio) {
+                const tr = okRadio.closest('tr');
+                const noteInput = tr.querySelector('input[type="text"]');
+                if (noteInput && item.note) noteInput.value = item.note;
+            }
+        });
+    }
+}
+
+function clearChecklistPage(skipConfirm = false) {
+    if (!skipConfirm && !confirm("確定要清除查檢表所有數據嗎？此動作無法復原。")) return;
+    
+    document.getElementById('checkDate').valueAsDate = new Date();
+    document.getElementById('checkPerson').value = "";
+    document.querySelectorAll('#checkListBody input[type="radio"]').forEach(r => r.checked = false);
+    document.querySelectorAll('#checkListBody input[type="text"]').forEach(i => i.value = "");
+}
+
+// ---------------- 列印機制(原生網頁轉換) ----------------
+
+function triggerHTMLPrint(title, htmlContent) {
+    const container = document.getElementById('printContainer');
+    const originalTitle = document.title;
+    
+    container.innerHTML = htmlContent;
+    
+    document.body.classList.add('print-mode');
+    document.title = title;
+    
+    window.print();
+    
+    document.body.classList.remove('print-mode');
+    container.innerHTML = '';
+    document.title = originalTitle;
+}
+
+// 列印 HTML 的提取函數
+function getRawDataHTML() {
+    let html = `<div style="font-family: 'Microsoft JhengHei', sans-serif; width: 100%;">`;
+    html += `<h3 style="text-align:center; font-weight:bold; margin-bottom:20px;">試驗原始紀錄</h3>`;
+    
+    let blocks = document.querySelectorAll('.tsf-record-block, #rawDataContainer .raw-data-block, #rawDataContainer2 .raw-data-block');
+    
+    if (blocks.length === 0) {
+        html += `<p style="text-align:center;">無資料可列印！</p></div>`;
+        return html;
+    }
+
+    html += `<div style="display: flex; flex-wrap: wrap; justify-content: space-between; width: 100%;">`;
+    
+    blocks.forEach(blk => {
+        let clone = blk.cloneNode(true);
+        clone.querySelectorAll('.no-print, button').forEach(el => el.remove());
+        clone.querySelectorAll('input').forEach(inp => {
+            let span = document.createElement('span');
+            span.innerText = inp.value;
+            span.style.fontWeight = 'bold';
+            span.style.color = '#000';
+            inp.parentNode.replaceChild(span, inp);
+        });
+        
+        html += `<div style="width: 48%; box-sizing: border-box; border: 2px solid #000; border-radius: 5px; padding: 10px; margin-bottom: 20px; background-color: #fff; page-break-inside: avoid;">`;
+        html += clone.innerHTML;
+        html += `</div>`;
+    });
+    
+    html += `</div></div>`;
+    return html;
+}
+
+function getChecklistHTML() {
+    let dateVal = document.getElementById('checkDate').value;
+    let personVal = document.getElementById('checkPerson').value;
+    
+    let html = `<div style="font-family: 'Microsoft JhengHei', sans-serif; width: 100%;">`;
+    html += `<h3 style="text-align:center; font-weight:bold; margin-bottom:15px;">試驗前/中/後設備確認查檢表</h3>`;
+    html += `<div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:bold; font-size:1.1em;"><span>點檢日期: ${dateVal}</span><span>點檢者: ${personVal}</span></div>`;
+    
+    html += `
+    <style>
+        @media print {
+            .checklist-print-table { page-break-inside: auto; }
+            .checklist-print-table tr { page-break-inside: avoid; page-break-after: auto; }
+            .checklist-print-table thead { display: table-header-group; }
+        }
+        .checklist-print-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 2px solid black;
+            font-size: 14px;
+        }
+        .checklist-print-table th, .checklist-print-table td {
+            border: 1px solid black;
+            padding: 6px;
+        }
+        .bg-gray {
+            background-color: #f0f0f0 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+        .bg-light-blue {
+            background-color: #e3f2fd !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+    </style>
+    `;
+    
+    html += `<table class="checklist-print-table">`;
+    html += `<thead class="bg-gray"><tr><th style="width:55%; padding:8px;">項目</th><th style="width:10%;">是 (OK)</th><th style="width:10%;">否 (NG)</th><th style="width:25%;">備註 (紀錄數值)</th></tr></thead>`;
+    html += `<tbody>`;
+    
+    const rows = document.querySelectorAll('#checkListBody tr');
+    rows.forEach((row) => {
+        if (row.classList.contains('checklist-header')) {
+            html += `<tr class="bg-light-blue"><td colspan="4" style="padding:8px; font-weight:bold; font-size:1.1em;">${row.innerText}</td></tr>`;
+        } else {
+            let text = row.cells[0].innerText;
+            let ok = row.querySelector('input[value="OK"]').checked ? '✔' : '';
+            let ng = row.querySelector('input[value="NG"]').checked ? '✘' : '';
+            let note = row.querySelector('input[type="text"]').value;
+            html += `<tr><td>${text}</td><td style="text-align:center; font-weight:bold; font-size:1.2em;">${ok}</td><td style="text-align:center; font-weight:bold; font-size:1.2em;">${ng}</td><td>${note}</td></tr>`;
+        }
+    });
+    
+    html += `</tbody></table></div>`;
+    return html;
+}
+
+function getCombinedReportHTML() {
+    let date = document.getElementById('testDate').value;
+    let operator = document.getElementById('operatorName').value;
+    let tsfON = document.getElementById('tsfON').value;
+    let tsfRepVal = document.getElementById('tsfRepVal').value;
+    let tsfExpVal = document.getElementById('tsfExpVal').value;
+
+    let atmHpa = document.getElementById('atmPressureInput').value || '--';
+    let atmInHg = document.getElementById('atmInHg').value || '--';
+    let stdIAT = document.getElementById('stdIAT').value || '--';
+    let compIAT = document.getElementById('compIAT').value || '--';
+    let heatScale = document.getElementById('heatScale').value || '--';
+    let deltaTemp = document.getElementById('deltaTemp').value || '--';
+
+    let methodARowsHTML = '';
+    document.querySelectorAll('#methodA_Table tbody tr').forEach(tr => {
+        let cells = tr.querySelectorAll('td');
+        if(cells.length >= 5) {
+            methodARowsHTML += `<tr>
+                <td style="padding:5px;">${cells[0].innerText}</td>
+                <td style="padding:5px;">${cells[1].innerText}</td>
+                <td style="padding:5px;">${cells[2].innerText}</td>
+                <td style="padding:5px;">${cells[3].innerText}</td>
+                <td style="padding:5px;">${cells[4].innerText}</td>
+            </tr>`;
+        }
+    });
+
+    let repRowsHTML = '';
+    document.querySelectorAll('#repeatabilityTable tbody tr').forEach(tr => {
+        let cells = tr.querySelectorAll('td');
+        if(cells.length >= 10) {
+            repRowsHTML += `<tr>
+                <td style="padding:5px;">${cells[0].innerText}</td>
+                <td style="padding:5px;">${cells[1].innerText}</td>
+                <td style="padding:5px;">${cells[2].innerText}</td>
+                <td style="padding:5px;">${cells[3].innerText}</td>
+                <td style="padding:5px;">${cells[4].innerText}</td>
+                <td style="padding:5px;">${cells[5].innerText}</td>
+                <td style="padding:5px;">${cells[6].innerText}</td>
+                <td style="padding:5px;">${cells[7].innerText}</td>
+                <td style="padding:5px;">${cells[8].innerText}</td>
+                <td style="padding:5px;">${cells[9].innerText}</td>
+            </tr>`;
+        }
+    });
+
+    let html = `<div style="font-family: 'Microsoft JhengHei', sans-serif; width: 100%; font-size: 14px;">`;
+    
+    html += `
+    <style>
+        @media print {
+            table { page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            thead { display: table-header-group; }
+            tfoot { display: table-footer-group; }
+        }
+    </style>
+    `;
+
+    html += `<h3 style="text-align:center; font-weight:bold; margin-bottom:15px;">綜合試驗報告</h3>`;
+    html += `<p style="font-weight:bold; font-size:1.1em;">試驗日期：${date} &nbsp;&nbsp;&nbsp;&nbsp; 操作者: ${operator}</p>`;
+    
+    html += `<h4 style="font-weight:bold; margin-top:20px;">1. 查核燃料(TSF)試驗：</h4>`;
+    html += `<table border="1" style="width:100%; border-collapse:collapse; text-align:center; border: 2px solid black;">`;
+    html += `<thead><tr style="background:#f0f0f0;"><th>標準</th><th>報告(實驗值)</th></tr></thead>`;
+    html += `<tbody><tr><td style="padding:8px;">TSF-${tsfON} ± 0.1</td><td style="padding:8px;">${tsfRepVal} (${tsfExpVal})</td></tr></tbody>`;
+    html += `</table>`;
+
+    html += `<h4 style="font-weight:bold; margin-top:30px;">2. 樣品試驗報告：</h4>`;
+    html += `<p style="font-weight:bold; margin-bottom:5px;">*實驗室環境及引擎參數紀錄*</p>`;
+    html += `<p style="line-height:1.6; margin-top:0;">`;
+    html += `*試驗時實驗室大氣壓力 ${atmHpa} (hPa or mbar)(壓力計)。換算後 ${atmInHg} (in.Hg)。<br>`;
+    html += `*試驗時未經補償時(依大氣壓力查表)之進氣溫度(IAT) ${stdIAT} (℉)。<br>`;
+    html += `*補償後進氣溫度 ${compIAT} (℉)(溫度計)；加熱刻度 ${heatScale} 。實際補償 ${deltaTemp} (℉)`;
+    html += `</p>`;
+
+    html += `<p style="font-weight:bold; margin-bottom:5px; margin-top:15px;">*報告彙整 (方法A)*</p>`;
+    html += `<table border="1" style="width:100%; border-collapse:collapse; text-align:center; border: 2px solid black;">`;
+    html += `<thead><tr style="background:#f0f0f0;"><th style="padding:5px;">#</th><th style="padding:5px;">實驗日期</th><th style="padding:5px;">樣品名稱</th><th style="padding:5px;">Sample ON (實驗值)</th><th style="padding:5px;">Sample ON (報告值)</th></tr></thead>`;
+    html += `<tbody>` + methodARowsHTML + `</tbody>`;
+    html += `</table>`;
+    
+    html += `<p style="font-size: 0.9em; font-style:italic; line-height:1.5; margin-top:10px;">`;
+    html += `*實驗數據記錄至小數2位；報告數值記錄至小數1位，以四捨六入五成雙原則進位*<br>`;
+    html += `*試驗使用CNS 12011 中方法A-涵括法-平衡燃料液位法進行試樣燃料之辛烷值評級。`;
+    html += `</p>`;
+
+    html += `<h4 style="font-weight:bold; margin-top:30px; page-break-before: auto;">3. 重複試驗</h4>`;
+    html += `<p style="margin-bottom:5px;">對同一樣品進行2次試驗(2組2循環之ON平均值)，所得結果之差值不得超出以下數值***r(m)=0.00834(125-ON)</p>`;
+    html += `<table border="1" style="width:100%; border-collapse:collapse; text-align:center; border: 2px solid black; font-size:13px;">`;
+    html += `<thead><tr style="background:#f0f0f0;">
+                <th style="padding:5px;">#</th><th style="padding:5px;">實驗日期</th><th style="padding:5px;">樣品名稱</th>
+                <th style="padding:5px;">ON1</th><th style="padding:5px;">ON2</th><th style="padding:5px;">平均值 ON(av.)</th>
+                <th style="padding:5px;">試驗重複性 r</th><th style="padding:5px;">方法重複性 r(m)</th><th style="padding:5px;">判定</th><th style="padding:5px;">相對差異 %</th>
+             </tr></thead>`;
+    html += `<tbody>` + repRowsHTML + `</tbody>`;
+    html += `</table>`;
+
+    html += `</div>`;
+    return html;
+}
+
+// 個別列印按鈕調用
+function printRawDataHTML() {
+    let blocks = document.querySelectorAll('.tsf-record-block, #rawDataContainer .raw-data-block, #rawDataContainer2 .raw-data-block');
+    if (blocks.length === 0) {
+        alert("無資料可列印！");
+        return;
+    }
+    triggerHTMLPrint("試驗原始紀錄", getRawDataHTML());
+}
+
+function printChecklistHTML() {
+    triggerHTMLPrint("設備查檢表", getChecklistHTML());
+}
+
+function printCombinedReportHTML() {
+    triggerHTMLPrint("綜合試驗報告", getCombinedReportHTML());
+}
+
+// 合併列印全部
+function printAllReportsHTML() {
+    let html = "";
+    html += getCombinedReportHTML();
+    html += `<div style="page-break-before: always;"></div>`;
+    html += getChecklistHTML();
+    html += `<div style="page-break-before: always;"></div>`;
+    html += getRawDataHTML();
+    triggerHTMLPrint("綜合試驗報告", html);
+}
+
+// ---------------- 系統資料存取 (Method A) ----------------
+function sendToSystem() {
+    let rows = Array.from(document.querySelectorAll('#methodA_Table tbody tr'));
+    if (rows.length === 0) { alert("無資料可存"); return; }
+    
+    let storedData = JSON.parse(localStorage.getItem('ron_data') || '[]');
+    let count = 0;
+    
+    rows.forEach(tr => {
+        let cols = tr.querySelectorAll('td');
+        let record = {
+            date: cols[1].innerText,
+            sample: cols[2].innerText,
+            avg: cols[3].innerText,
+            report: cols[4].innerText,
+            stab: cols[5].innerText,
+            operator: currentUser.user,
+            timestamp: new Date().toISOString()
+        };
+        storedData.push(record);
+        count++;
+    });
+    
+    localStorage.setItem('ron_data', JSON.stringify(storedData));
+    alert(`已儲存 ${count} 筆資料至系統`);
+}
+
+function openQueryModal() {
+    let modal = new bootstrap.Modal(document.getElementById('queryModal'));
+    modal.show();
+}
+
+function performQuery() {
+    let s = document.getElementById('queryStartDate').value;
+    let e = document.getElementById('queryEndDate').value;
+    if(!s || !e) { alert("請選擇日期區間"); return; }
+    
+    let start = new Date(s);
+    let end = new Date(e);
+    let allData = JSON.parse(localStorage.getItem('ron_data') || '[]');
+    
+    let filtered = allData.filter(d => {
+        let dDate = new Date(d.date);
+        return dDate >= start && dDate <= end;
+    });
+    
+    filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    let tbody = document.querySelector('#queryResultTable tbody');
+    tbody.innerHTML = '';
+    
+    if(filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5">無資料</td></tr>';
+        return;
+    }
+    
+    filtered.forEach(d => {
+        let row = tbody.insertRow();
+        row.innerHTML = `<td>${d.date}</td><td>${d.sample}</td><td>${d.avg}</td><td>${d.report}</td><td>${d.stab}</td>`;
+    });
+    
+    window.lastQueryResult = filtered;
+}
+
+function exportQueryCSV() {
+    if(!window.lastQueryResult || window.lastQueryResult.length === 0) {
+        alert("無查詢結果可匯出");
+        return;
+    }
+    let csv =["\uFEFFDate,Sample,AvgON,ReportON,Stab,Operator,Timestamp"];
+    window.lastQueryResult.forEach(d => {
+        csv.push(`${d.date},"${d.sample}",${d.avg},${d.report},${d.stab},${d.operator},${d.timestamp}`);
+    });
+    
+    let blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    let link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "QueryData.csv";
+    link.click();
+}
+
+// ---------------- 系統資料存取 (Repeatability) ----------------
+function sendRepToSystem() {
+    let rows = Array.from(document.querySelectorAll('#repeatabilityTable tbody tr'));
+    if (rows.length === 0) { alert("無資料可存"); return; }
+    
+    let storedRepData = JSON.parse(localStorage.getItem('ron_rep_data') || '[]');
+    let count = 0;
+    
+    rows.forEach(tr => {
+        let cols = tr.querySelectorAll('td');
+        let record = {
+            date: cols[1].innerText,
+            sample: cols[2].innerText,
+            on1: cols[3].innerText,
+            on2: cols[4].innerText,
+            avg: cols[5].innerText,
+            r: cols[6].innerText,
+            rm: cols[7].innerText,
+            verdict: cols[8].innerText,
+            percent: cols[9].innerText,
+            operator: currentUser.user,
+            timestamp: new Date().toISOString()
+        };
+        storedRepData.push(record);
+        count++;
+    });
+    
+    localStorage.setItem('ron_rep_data', JSON.stringify(storedRepData));
+    alert(`已儲存 ${count} 筆重複性資料至系統`);
+}
+
+function openRepQueryModal() {
+    let modal = new bootstrap.Modal(document.getElementById('repQueryModal'));
+    modal.show();
+}
+
+function performRepQuery() {
+    let s = document.getElementById('repQueryStartDate').value;
+    let e = document.getElementById('repQueryEndDate').value;
+    if(!s || !e) { alert("請選擇日期區間"); return; }
+    
+    let start = new Date(s);
+    let end = new Date(e);
+    let allData = JSON.parse(localStorage.getItem('ron_rep_data') || '[]');
+    
+    let filtered = allData.filter(d => {
+        let dDate = new Date(d.date);
+        return dDate >= start && dDate <= end;
+    });
+    
+    filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    let tbody = document.querySelector('#repQueryResultTable tbody');
+    tbody.innerHTML = '';
+    
+    if(filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9">無資料</td></tr>';
+        return;
+    }
+    
+    filtered.forEach(d => {
+        let row = tbody.insertRow();
+        row.innerHTML = `<td>${d.date}</td><td>${d.sample}</td><td>${d.on1}</td><td>${d.on2}</td><td>${d.avg}</td><td>${d.r}</td><td>${d.rm}</td><td>${d.verdict}</td><td>${d.percent}</td>`;
+    });
+    
+    window.lastRepQueryResult = filtered;
+}
+
+function exportRepQueryCSV() {
+    if(!window.lastRepQueryResult || window.lastRepQueryResult.length === 0) {
+        alert("無查詢結果可匯出");
+        return;
+    }
+    let csv =["\uFEFFDate,Sample,ON1,ON2,Avg,r,rm,Verdict,Percent,Operator,Timestamp"];
+    window.lastRepQueryResult.forEach(d => {
+        csv.push(`${d.date},"${d.sample}",${d.on1},${d.on2},${d.avg},${d.r},${d.rm},${d.verdict},"${d.percent}",${d.operator},${d.timestamp}`);
+    });
+    
+    let blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    let link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "RepQueryData.csv";
+    link.click();
+}
+
+// ---------------- 解析資料庫 ----------------
+function parseDatabases() {
+    let lines = raw_PCorIAT.trim().split('\n');
+    window.dataPCor =[];
+    for(let i=1; i<lines.length; i++) {
+        let cols = lines[i].split(',');
+        if(cols.length >= 4) {
+            window.dataPCor.push({
+                p: parseFloat(cols[0]),
+                cr: parseFloat(cols[1]),
+                dir: parseFloat(cols[2]),
+                iat: parseFloat(cols[3])
+            });
+        }
+    }
+
+    let onLines = raw_ONtoCRDIR_Full.trim().split('\n');
+    db_ON_CR_DIR =[];
+    for(let i=1; i<onLines.length; i++) {
+        let cols = onLines[i].split(',');
+        if(cols.length >= 3) {
+            db_ON_CR_DIR.push({
+                on: parseFloat(cols[0]).toFixed(1),
+                cr: parseFloat(cols[1]),
+                dir: parseFloat(cols[2])
+            });
+        }
+    }
+}
+
+// ---------------- 邏輯函數 ----------------
+function calcAtm() {
+    let hpa = parseFloat(document.getElementById('atmPressureInput').value);
+    if (!isNaN(hpa)) {
+        let inHg = hpa * 0.02953;
+        document.getElementById('atmInHg').value = inHg.toFixed(2);
+        lookupPCorIAT(inHg);
+    }
+}
+
+function lookupPCorIAT(inHg) {
+    let closest = window.dataPCor.reduce((prev, curr) => {
+        return (Math.abs(curr.p - inHg) < Math.abs(prev.p - inHg) ? curr : prev);
+    });
+    
+    document.getElementById('stdIAT').value = closest.iat;
+    document.getElementById('correctionVals').innerText = `${closest.cr} / ${closest.dir}`;
+    window.currentCorrection = { cr: closest.cr, dir: closest.dir, iat: closest.iat };
+    calcTempDiff();
+}
+
+function calcTempDiff() {
+    let std = parseFloat(document.getElementById('stdIAT').value);
+    let comp = parseFloat(document.getElementById('compIAT').value);
+    if (!isNaN(std) && !isNaN(comp)) {
+        let delta = comp - std;
+        document.getElementById('deltaTemp').value = delta.toFixed(1);
+    }
+}
+
+function adjustON(delta) {
+    let slider = document.getElementById('onSlider');
+    let newVal = parseFloat(slider.value) + delta;
+    newVal = Math.round(newVal * 10) / 10;
+    if (newVal >= 70 && newVal <= 100) {
+        slider.value = newVal;
+        updateFromSlider(newVal);
+    }
+}
+
+function updateFromSlider(val) {
+    let onVal = parseFloat(val).toFixed(1);
+    document.getElementById('lookupON').innerText = onVal;
+    
+    let found = db_ON_CR_DIR.find(x => x.on === onVal);
+    
+    if (found) {
+        document.getElementById('stdCR').innerText = found.cr;
+        document.getElementById('stdDIR').innerText = found.dir;
+        
+        if (window.currentCorrection) {
+            let compCR = found.cr + window.currentCorrection.cr;
+            let compDIR = (found.dir + window.currentCorrection.dir).toFixed(3);
+            document.getElementById('compCR').innerText = compCR;
+            document.getElementById('compDIR').innerText = compDIR;
+        } else {
+            document.getElementById('compCR').innerText = "--";
+            document.getElementById('compDIR').innerText = "--";
+        }
+    } else {
+        document.getElementById('stdCR').innerText = "N/A";
+        document.getElementById('stdDIR').innerText = "N/A";
+        document.getElementById('compCR').innerText = "--";
+        document.getElementById('compDIR').innerText = "--";
+    }
+}
+
+function calcMethodC() {
+    let crLab = parseFloat(document.getElementById('methodC_CR_Input').value);
+    let dirLab = parseFloat(document.getElementById('methodC_DIR_Input').value);
+    
+    document.getElementById('val_C_CR_Lab').innerText = isNaN(crLab) ? '--' : crLab;
+    document.getElementById('val_C_DIR_Lab').innerText = isNaN(dirLab) ? '--' : dirLab;
+
+    if (window.currentCorrection) {
+        if (!isNaN(crLab)) {
+            let crStd = crLab - window.currentCorrection.cr;
+            document.getElementById('val_C_CR_Std').innerText = crStd;
+            let matchCR = db_ON_CR_DIR.reduce((a, b) => Math.abs(b.cr - crStd) < Math.abs(a.cr - crStd) ? b : a);
+            document.getElementById('val_C_ON_CR').innerText = matchCR.on;
+        }
+        if (!isNaN(dirLab)) {
+            let dirStd = dirLab - window.currentCorrection.dir;
+            document.getElementById('val_C_DIR_Std').innerText = dirStd.toFixed(3);
+            let matchDIR = db_ON_CR_DIR.reduce((a, b) => Math.abs(b.dir - dirStd) < Math.abs(a.dir - dirStd) ? b : a);
+            document.getElementById('val_C_ON_DIR').innerText = matchDIR.on;
+        }
+    }
+}
+
+function clearMethodCInputs() {
+    document.getElementById('methodC_Sample').value = '';
+    document.getElementById('methodC_CR_Input').value = '';
+    document.getElementById('methodC_DIR_Input').value = '';
+    document.getElementById('val_C_CR_Lab').innerText = '--';
+    document.getElementById('val_C_CR_Std').innerText = '--';
+    document.getElementById('val_C_ON_CR').innerText = '--';
+    document.getElementById('val_C_DIR_Lab').innerText = '--';
+    document.getElementById('val_C_DIR_Std').innerText = '--';
+    document.getElementById('val_C_ON_DIR').innerText = '--';
+}
+
+function renumberMethodC() {
+    let rows = document.querySelectorAll('#methodC_Table tbody tr');
+    rows.forEach((row, index) => {
+        row.cells[0].innerText = index + 1;
+    });
+}
+
+function addMethodCRecord() {
+    let sample = document.getElementById('methodC_Sample').value;
+    let onCR = document.getElementById('val_C_ON_CR').innerText;
+    let onDIR = document.getElementById('val_C_ON_DIR').innerText;
+
+    if (onCR === '--' || sample === '') return;
+
+    let tbody = document.querySelector('#methodC_Table tbody');
+    let row = tbody.insertRow();
+    let idx = tbody.rows.length; 
+    row.innerHTML = `<td>${idx}</td><td>${sample}</td><td>${onCR}</td><td>${onDIR}</td><td class="no-print"><button class="btn btn-sm btn-danger py-0" onclick="deleteRow(this)">-</button></td>`;
+}
+
+function adjustTSF(val) {
+    let input = document.getElementById('tsfON');
+    let current = parseFloat(input.value);
+    let newVal = Math.round((current + val) * 10) / 10;
+    input.value = newVal.toFixed(1);
+    updateTSF_PRFs();
+}
+
+function updateTSF_PRFs() {
+    let tsf = parseFloat(document.getElementById('tsfON').value);
+    if (!isNaN(tsf)) {
+        let rounded = Math.round(tsf);
+        document.getElementById('tsfPrfLow').value = (rounded - 1).toFixed(1);
+        document.getElementById('tsfPrfHigh').value = (rounded + 1).toFixed(1);
+    }
+}
+
+function addTSFRecordBlock() {
+    let container = document.getElementById('tsfRecordContainer');
+    let currentCount = container.querySelectorAll('.tsf-record-block').length;
+    let id = currentCount + 1;
+    let prfL = document.getElementById('tsfPrfLow').value;
+    let prfH = document.getElementById('tsfPrfHigh').value;
+    let currentTSF = document.getElementById('tsfON').value;
+    let defaultSampleName = `TSF-${currentTSF}`;
+
+    let html = `
+    <div class="col-lg-6 raw-data-block tsf-record-block">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <div>
+                <span class="fw-bold bg-dark text-white px-1 rounded">TSF#${id}</span>
+                <input type="text" class="sample-name-input" value="${defaultSampleName}" placeholder="TSF 樣品編號">
+            </div>
+            <span class="fw-bold small">TSF- PRF H/L: <span class="val-prf-h">${prfH}</span> / <span class="val-prf-l">${prfL}</span></span>
+            <button class="no-print btn btn-sm btn-danger py-0" style="font-size:0.6rem;" onclick="this.closest('.tsf-record-block').remove();">X</button>
+        </div>
+        <table class="table table-bordered table-sm text-center align-middle mb-1 raw-data-table bg-white">
+            <thead class="table-light"><tr><th style="width:15%">Cyc 1</th><th style="width:15%">TSF</th><th style="width:15%">PRF H</th><th style="width:15%">PRF L</th><th style="width:40%">計算</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td class="fw-bold">KI</td>
+                    <td><input type="number" class="form-control input-mini sample-ki-1" placeholder="TSF-KI" step="0.1"></td>
+                    <td><input type="number" class="form-control input-mini prf-h-ki-1" placeholder="H-KI" step="0.1"></td>
+                    <td><input type="number" class="form-control input-mini prf-l-ki-1" placeholder="L-KI" step="0.1"></td>
+                    <td class="text-start ps-1">ON1: <span class="res-on1 fw-bold text-primary">--</span></td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Fuel Level</td>
+                    <td><input type="number" class="form-control input-mini sample-fl-1" placeholder="TSF-FL"></td>
+                    <td><input type="number" class="form-control input-mini prf-h-fl-1" placeholder="H-FL"></td>
+                    <td><input type="number" class="form-control input-mini prf-l-fl-1" placeholder="L-FL"></td>
+                    <td class="text-start ps-1">ΔKI/ΔON1: <span class="res-stab1">--</span></td>
+                </tr>
+            </tbody>
+            <thead class="table-light"><tr><th>Cyc 2</th><th>TSF</th><th>PRF L</th><th>PRF H</th><th>計算</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td class="fw-bold">KI</td>
+                    <td><input type="number" class="form-control input-mini sample-ki-2" placeholder="TSF-KI" step="0.1"></td>
+                    <td><input type="number" class="form-control input-mini prf-l-ki-2" placeholder="L-KI" step="0.1"></td>
+                    <td><input type="number" class="form-control input-mini prf-h-ki-2" placeholder="H-KI" step="0.1"></td>
+                    <td class="text-start ps-1">ON2: <span class="res-on2 fw-bold text-primary">--</span></td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Fuel Level</td>
+                    <td><input type="number" class="form-control input-mini sample-fl-2" placeholder="TSF-FL"></td>
+                    <td><input type="number" class="form-control input-mini prf-l-fl-2" placeholder="L-FL"></td>
+                    <td><input type="number" class="form-control input-mini prf-h-fl-2" placeholder="H-FL"></td>
+                    <td class="text-start ps-1">ΔKI/ΔON2: <span class="res-stab2">--</span></td>
+                </tr>
+            </tbody>
+            <tfoot style="border-top:2px solid #ccc;">
+                <tr>
+                    <td colspan="4" class="text-end fw-bold">ON (av.) | ΔKI/ΔON(av.):</td>
+                    <td class="text-start"><span class="res-onavg fw-bold text-success">--</span> | <span class="res-stabavg">--</span></td>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="no-print d-flex gap-1 mt-1">
+            <button class="btn btn-sm btn-info flex-grow-1 py-0" style="font-size:0.7rem;" onclick="calcTSFBlock(this)">計算並帶入 TSF 報告值</button>
+            <button class="btn btn-sm btn-outline-success flex-grow-1 py-0" style="font-size:0.7rem;" onclick="reportTSFBlock(this)">將數據匯至*報告彙整(方法A)*</button>
+        </div>
+    </div>`;
+    
+    let temp = document.createElement('div');
+    temp.innerHTML = html;
+    container.appendChild(temp.firstElementChild);
+}
+
+function specialRound(num) {
+    let s = num.toFixed(2);
+    let parts = s.split('.');
+    if (parts.length < 2) return s;
+    let d1 = parseInt(parts[1][0]);
+    let d2 = parseInt(parts[1][1]);
+    let finalVal = parseFloat(s.substring(0, s.length-1));
+    
+    if (d2 < 5) {
+    } else if (d2 >= 6) { 
+        finalVal += 0.1; 
+    } else { 
+        if (d1 % 2 !== 0) { 
+            finalVal += 0.1;
+        }
+    }
+    return finalVal.toFixed(1);
+}
+
+function calcTSFBlock(btn) {
+    let blk = btn.closest('.raw-data-block');
+    let prfH = parseFloat(blk.querySelector('.val-prf-h').innerText);
+    let prfL = parseFloat(blk.querySelector('.val-prf-l').innerText);
+
+    if (isNaN(prfH) || isNaN(prfL)) return;
+
+    let ski1 = parseFloat(blk.querySelector('.sample-ki-1').value);
+    let hki1 = parseFloat(blk.querySelector('.prf-h-ki-1').value);
+    let lki1 = parseFloat(blk.querySelector('.prf-l-ki-1').value);
+    let ski2 = parseFloat(blk.querySelector('.sample-ki-2').value);
+    let lki2 = parseFloat(blk.querySelector('.prf-l-ki-2').value);
+    let hki2 = parseFloat(blk.querySelector('.prf-h-ki-2').value);
+
+    let diffON = prfH - prfL;
+    let denom1 = lki1 - hki1;
+    let on1 = prfL + ((lki1 - ski1) / denom1) * diffON;
+    let stab1 = Math.abs(denom1 / diffON);
+
+    let denom2 = lki2 - hki2;
+    let on2 = prfL + ((lki2 - ski2) / denom2) * diffON;
+    let stab2 = Math.abs(denom2 / diffON);
+
+    let avgON = (on1 + on2) / 2;
+    let avgStab = (stab1 + stab2) / 2;
+
+    blk.querySelector('.res-on1').innerText = isNaN(on1)?'--':on1.toFixed(2);
+    blk.querySelector('.res-stab1').innerText = isNaN(stab1)?'--':stab1.toFixed(1);
+    blk.querySelector('.res-on2').innerText = isNaN(on2)?'--':on2.toFixed(2);
+    blk.querySelector('.res-stab2').innerText = isNaN(stab2)?'--':stab2.toFixed(1);
+    blk.querySelector('.res-onavg').innerText = isNaN(avgON)?'--':avgON.toFixed(2);
+    blk.querySelector('.res-stabavg').innerText = isNaN(avgStab)?'--':avgStab.toFixed(1);
+
+    if (!isNaN(avgON)) {
+        blk.dataset.finalON = avgON;
+        blk.dataset.reportON = specialRound(avgON); 
+        blk.dataset.stab = avgStab.toFixed(1);
+
+        document.getElementById('tsfExpVal').value = avgON.toFixed(2);
+        document.getElementById('tsfRepVal').value = specialRound(avgON);
+    }
+}
+
+// ---------------- 將數據匯至*報告彙整(方法A)*：TSF 專用功能 ----------------
+function reportTSFBlock(btn) {
+    let blk = btn.closest('.tsf-record-block');
+    let avg = parseFloat(blk.dataset.finalON);
+    let rtVal = blk.dataset.reportON; 
+    let stab = blk.dataset.stab;
+    let sampleName = blk.querySelector('.sample-name-input').value;
+    let tsfIdText = blk.querySelector('span.bg-dark').innerText; // 取得 TSF#編號
+    
+    if (isNaN(avg)) { alert("請先計算數據"); return; }
+    if (!sampleName) {
+        sampleName = "TSF Calibration"; 
+    }
+
+    let date = document.getElementById('testDate').value;
+    let tbody = document.querySelector('#methodA_Table tbody');
+    let row = document.createElement('tr');
+    
+    // 加入專屬 class 以標記這是一筆 TSF 結果，用以置頂保護且不被重新編號
+    row.className = 'tsf-report-row'; 
+    
+    row.innerHTML = `<td>${tsfIdText}</td><td>${date}</td><td>${sampleName}</td><td>${avg.toFixed(2)}</td><td>${rtVal}</td><td>${stab}</td><td class="no-print"><button class="btn btn-sm btn-danger py-0" onclick="deleteRow(this); renumberMethodA();">-</button></td>`;
+    
+    // TSF 置頂邏輯
+    let lastTsfRow = Array.from(tbody.querySelectorAll('.tsf-report-row')).pop();
+    if (lastTsfRow) {
+        if (lastTsfRow.nextSibling) {
+            tbody.insertBefore(row, lastTsfRow.nextSibling);
+        } else {
+            tbody.appendChild(row);
+        }
+    } else {
+        if (tbody.firstChild) {
+            tbody.insertBefore(row, tbody.firstChild);
+        } else {
+            tbody.appendChild(row);
+        }
+    }
+
+    methodAReports.push({id: tsfIdText, date, sampleName, avg: avg.toFixed(2), rt: rtVal, stab});
+    renumberMethodA(); 
+}
+
+function setPRF() {
+    let est = parseFloat(document.getElementById('estON').value);
+    if (!isNaN(est)) {
+        let base = Math.round(est);
+        document.getElementById('prfLow').value = base - 1;
+        document.getElementById('prfHigh').value = base + 1;
+    }
+}
+
+function setPRF2() {
+    let est = parseFloat(document.getElementById('estON2').value);
+    if (!isNaN(est)) {
+        let base = Math.round(est);
+        document.getElementById('prfLow2').value = base - 1;
+        document.getElementById('prfHigh2').value = base + 1;
+    }
+}
+
+function addRawDataBlock() {
+    let container = document.getElementById('rawDataContainer');
+    let currentBlocks = container.querySelectorAll('.raw-data-block:not(.tsf-record-block)').length;
+    let id = currentBlocks + 1;
+    let prfL = document.getElementById('prfLow').value || 'L';
+    let prfH = document.getElementById('prfHigh').value || 'H';
+    
+    let html = `
+    <div class="col-lg-6 raw-data-block bg-raw-block">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <div>
+                <span class="fw-bold block-id-span">#${id}</span>
+                <input type="text" class="sample-name-input" placeholder="樣品編號">
+            </div>
+            <span class="fw-bold small">PRF H/L: <span class="val-prf-h">${prfH}</span> / <span class="val-prf-l">${prfL}</span></span>
+            <button class="no-print btn btn-sm btn-danger py-0" style="font-size:0.6rem;" onclick="this.closest('.raw-data-block').remove(); renumberBlocks();">X</button>
+        </div>
+        <table class="table table-bordered table-sm text-center align-middle mb-1 raw-data-table bg-white">
+            <thead class="table-light"><tr><th style="width:15%">Cyc 1</th><th style="width:15%">Sample</th><th style="width:15%">PRF H</th><th style="width:15%">PRF L</th><th style="width:40%">計算</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td class="fw-bold">KI</td>
+                    <td><input type="number" class="form-control input-mini sample-ki-1" placeholder="S-KI" step="0.1"></td>
+                    <td><input type="number" class="form-control input-mini prf-h-ki-1" placeholder="H-KI" step="0.1"></td>
+                    <td><input type="number" class="form-control input-mini prf-l-ki-1" placeholder="L-KI" step="0.1"></td>
+                    <td class="text-start ps-1">ON1: <span class="res-on1 fw-bold text-primary">--</span></td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Fuel Level</td>
+                    <td><input type="number" class="form-control input-mini sample-fl-1" placeholder="S-FL"></td>
+                    <td><input type="number" class="form-control input-mini prf-h-fl-1" placeholder="H-FL"></td>
+                    <td><input type="number" class="form-control input-mini prf-l-fl-1" placeholder="L-FL"></td>
+                    <td class="text-start ps-1">ΔKI/ΔON1: <span class="res-stab1">--</span></td>
+                </tr>
+            </tbody>
+            <thead class="table-light"><tr><th>Cyc 2</th><th>Sample</th><th>PRF L</th><th>PRF H</th><th>計算</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td class="fw-bold">KI</td>
+                    <td><input type="number" class="form-control input-mini sample-ki-2" placeholder="S-KI" step="0.1"></td>
+                    <td><input type="number" class="form-control input-mini prf-l-ki-2" placeholder="L-KI" step="0.1"></td>
+                    <td><input type="number" class="form-control input-mini prf-h-ki-2" placeholder="H-KI" step="0.1"></td>
+                    <td class="text-start ps-1">ON2: <span class="res-on2 fw-bold text-primary">--</span></td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Fuel Level</td>
+                    <td><input type="number" class="form-control input-mini sample-fl-2" placeholder="S-FL"></td>
+                    <td><input type="number" class="form-control input-mini prf-l-fl-2" placeholder="L-FL"></td>
+                    <td><input type="number" class="form-control input-mini prf-h-fl-2" placeholder="H-FL"></td>
+                    <td class="text-start ps-1">ΔKI/ΔON2: <span class="res-stab2">--</span></td>
+                </tr>
+            </tbody>
+            <tfoot style="border-top:2px solid #ccc;">
+                <tr>
+                    <td colspan="4" class="text-end fw-bold">ON (av.) | ΔKI/ΔON(av.):</td>
+                    <td class="text-start"><span class="res-onavg fw-bold text-success">--</span> | <span class="res-stabavg">--</span></td>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="no-print d-flex gap-1 mt-1">
+            <button class="btn btn-sm btn-info flex-grow-1 py-0" style="font-size:0.7rem;" onclick="calcBlockLocal(this)">計算</button>
+            <button class="btn btn-sm btn-outline-success flex-grow-1 py-0" style="font-size:0.7rem;" onclick="reportBlockLocal(this)">將數據匯至*報告彙整(方法A)*</button>
+        </div>
+    </div>`;
+    
+    let temp = document.createElement('div');
+    temp.innerHTML = html;
+    container.appendChild(temp.firstElementChild);
+}
+
+function addRawDataBlock2() {
+    let container = document.getElementById('rawDataContainer2');
+    let currentBlocks = container.querySelectorAll('.raw-data-block').length;
+    let id = currentBlocks + 1; 
+    let prfL = document.getElementById('prfLow2').value || 'L';
+    let prfH = document.getElementById('prfHigh2').value || 'H';
+    
+    let html = `
+    <div class="col-lg-6 raw-data-block bg-raw-block" style="border-color:#ff5722;">
+        <div class="d-flex justify-content-between align-items-center mb-1">
+            <div>
+                <span class="fw-bold block-id-span">#${id}</span>
+                <input type="text" class="sample-name-input" placeholder="樣品編號">
+            </div>
+            <span class="fw-bold small">PRF H/L: <span class="val-prf-h">${prfH}</span> / <span class="val-prf-l">${prfL}</span></span>
+            <button class="no-print btn btn-sm btn-danger py-0" style="font-size:0.6rem;" onclick="this.closest('.raw-data-block').remove(); renumberBlocks2();">X</button>
+        </div>
+        <table class="table table-bordered table-sm text-center align-middle mb-1 raw-data-table bg-white">
+            <thead class="table-light"><tr><th style="width:15%">Cyc 1</th><th style="width:15%">Sample</th><th style="width:15%">PRF H</th><th style="width:15%">PRF L</th><th style="width:40%">計算</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td class="fw-bold">KI</td>
+                    <td><input type="number" class="form-control input-mini sample-ki-1" placeholder="S-KI" step="0.1"></td>
+                    <td><input type="number" class="form-control input-mini prf-h-ki-1" placeholder="H-KI" step="0.1"></td>
+                    <td><input type="number" class="form-control input-mini prf-l-ki-1" placeholder="L-KI" step="0.1"></td>
+                    <td class="text-start ps-1">ON1: <span class="res-on1 fw-bold text-primary">--</span></td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Fuel Level</td>
+                    <td><input type="number" class="form-control input-mini sample-fl-1" placeholder="S-FL"></td>
+                    <td><input type="number" class="form-control input-mini prf-h-fl-1" placeholder="H-FL"></td>
+                    <td><input type="number" class="form-control input-mini prf-l-fl-1" placeholder="L-FL"></td>
+                    <td class="text-start ps-1">ΔKI/ΔON1: <span class="res-stab1">--</span></td>
+                </tr>
+            </tbody>
+            <thead class="table-light"><tr><th>Cyc 2</th><th>Sample</th><th>PRF L</th><th>PRF H</th><th>計算</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td class="fw-bold">KI</td>
+                    <td><input type="number" class="form-control input-mini sample-ki-2" placeholder="S-KI" step="0.1"></td>
+                    <td><input type="number" class="form-control input-mini prf-l-ki-2" placeholder="L-KI" step="0.1"></td>
+                    <td><input type="number" class="form-control input-mini prf-h-ki-2" placeholder="H-KI" step="0.1"></td>
+                    <td class="text-start ps-1">ON2: <span class="res-on2 fw-bold text-primary">--</span></td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Fuel Level</td>
+                    <td><input type="number" class="form-control input-mini sample-fl-2" placeholder="S-FL"></td>
+                    <td><input type="number" class="form-control input-mini prf-l-fl-2" placeholder="L-FL"></td>
+                    <td><input type="number" class="form-control input-mini prf-h-fl-2" placeholder="H-FL"></td>
+                    <td class="text-start ps-1">ΔKI/ΔON2: <span class="res-stab2">--</span></td>
+                </tr>
+            </tbody>
+            <tfoot style="border-top:2px solid #ccc;">
+                <tr>
+                    <td colspan="4" class="text-end fw-bold">ON (av.) | ΔKI/ΔON(av.):</td>
+                    <td class="text-start"><span class="res-onavg fw-bold text-success">--</span> | <span class="res-stabavg">--</span></td>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="no-print d-flex gap-1 mt-1">
+            <button class="btn btn-sm btn-info flex-grow-1 py-0" style="font-size:0.7rem;" onclick="calcBlockLocal(this)">計算</button>
+            <button class="btn btn-sm btn-outline-success flex-grow-1 py-0" style="font-size:0.7rem;" onclick="reportBlockLocal(this)">將數據匯至*報告彙整(方法A)*</button>
+        </div>
+    </div>`;
+    
+    let temp = document.createElement('div');
+    temp.innerHTML = html;
+    container.appendChild(temp.firstElementChild);
+}
+
+function applyPRFToRecords() {
+    let l = document.getElementById('prfLow').value;
+    let h = document.getElementById('prfHigh').value;
+    
+    if(!l || !h) {
+        alert("請先輸入 PRF Low 和 High 的值");
+        return;
+    }
+    
+    document.querySelectorAll('#rawDataContainer .raw-data-block:not(.tsf-record-block) .val-prf-l').forEach(e => e.innerText = l);
+    document.querySelectorAll('#rawDataContainer .raw-data-block:not(.tsf-record-block) .val-prf-h').forEach(e => e.innerText = h);
+}
+
+function applyPRFToRecords2() {
+    let l = document.getElementById('prfLow2').value;
+    let h = document.getElementById('prfHigh2').value;
+    
+    if(!l || !h) {
+        alert("請先輸入 PRF Low 和 High 的值");
+        return;
+    }
+    
+    document.querySelectorAll('#rawDataContainer2 .raw-data-block .val-prf-l').forEach(e => e.innerText = l);
+    document.querySelectorAll('#rawDataContainer2 .raw-data-block .val-prf-h').forEach(e => e.innerText = h);
+}
+
+function renumberBlocks() {
+    let blocks = document.querySelectorAll('#rawDataContainer .raw-data-block:not(.tsf-record-block)');
+    blocks.forEach((blk, index) => {
+        let span = blk.querySelector('.block-id-span');
+        if(span) span.innerText = `#${index + 1}`;
+    });
+}
+
+function renumberBlocks2() {
+    let blocks = document.querySelectorAll('#rawDataContainer2 .raw-data-block');
+    blocks.forEach((blk, index) => {
+        let span = blk.querySelector('.block-id-span');
+        if(span) span.innerText = `#${index + 1}`;
+    });
+}
+
+function continueNumbering2() {
+    let c1 = document.querySelectorAll('#rawDataContainer .raw-data-block:not(.tsf-record-block)').length;
+    let blocks = document.querySelectorAll('#rawDataContainer2 .raw-data-block');
+    blocks.forEach((blk, index) => {
+        let span = blk.querySelector('.block-id-span');
+        if(span) span.innerText = `#${c1 + index + 1}`;
+    });
+}
+
+function calcBlockLocal(btn) {
+    let blk = btn.closest('.raw-data-block');
+    let prfH = parseFloat(blk.querySelector('.val-prf-h').innerText);
+    let prfL = parseFloat(blk.querySelector('.val-prf-l').innerText);
+
+    if (isNaN(prfH) || isNaN(prfL)) {
+        alert("PRF 數值不完整，請先帶入紀錄表單或檢查設定。");
+        return;
+    }
+
+    let ski1 = parseFloat(blk.querySelector('.sample-ki-1').value);
+    let hki1 = parseFloat(blk.querySelector('.prf-h-ki-1').value);
+    let lki1 = parseFloat(blk.querySelector('.prf-l-ki-1').value);
+    let ski2 = parseFloat(blk.querySelector('.sample-ki-2').value);
+    let lki2 = parseFloat(blk.querySelector('.prf-l-ki-2').value);
+    let hki2 = parseFloat(blk.querySelector('.prf-h-ki-2').value);
+
+    let diffON = prfH - prfL;
+    let denom1 = lki1 - hki1;
+    let on1 = prfL + ((lki1 - ski1) / denom1) * diffON;
+    let stab1 = Math.abs(denom1 / diffON);
+
+    let denom2 = lki2 - hki2;
+    let on2 = prfL + ((lki2 - ski2) / denom2) * diffON;
+    let stab2 = Math.abs(denom2 / diffON);
+
+    let avgON = (on1 + on2) / 2;
+    let avgStab = (stab1 + stab2) / 2;
+
+    blk.querySelector('.res-on1').innerText = isNaN(on1)?'--':on1.toFixed(2);
+    blk.querySelector('.res-stab1').innerText = isNaN(stab1)?'--':stab1.toFixed(1);
+    blk.querySelector('.res-on2').innerText = isNaN(on2)?'--':on2.toFixed(2);
+    blk.querySelector('.res-stab2').innerText = isNaN(stab2)?'--':stab2.toFixed(1);
+    blk.querySelector('.res-onavg').innerText = isNaN(avgON)?'--':avgON.toFixed(2);
+    blk.querySelector('.res-stabavg').innerText = isNaN(avgStab)?'--':avgStab.toFixed(1);
+    
+    blk.dataset.finalON = avgON;
+    blk.dataset.stab = avgStab.toFixed(1);
+}
+
+// ---------------- 將數據匯至*報告彙整(方法A)*：一般試樣專用功能 ----------------
+function reportBlockLocal(btn) {
+    let blk = btn.closest('.raw-data-block');
+    let avg = parseFloat(blk.dataset.finalON);
+    let stab = blk.dataset.stab;
+    let sampleName = blk.querySelector('.sample-name-input').value || "Sample";
+    
+    if (isNaN(avg)) { alert("請先計算數據"); return; }
+
+    let rtVal = specialRound(avg);
+    let date = document.getElementById('testDate').value;
+    let tbody = document.querySelector('#methodA_Table tbody');
+    let row = tbody.insertRow();
+    
+    row.innerHTML = `<td></td><td>${date}</td><td>${sampleName}</td><td>${avg.toFixed(2)}</td><td>${rtVal}</td><td>${stab}</td><td class="no-print"><button class="btn btn-sm btn-danger py-0" onclick="deleteRow(this); renumberMethodA();">-</button></td>`;
+    methodAReports.push({id: "", date, sampleName, avg: avg.toFixed(2), rt: rtVal, stab});
+    
+    renumberMethodA();
+}
+
+function deleteRow(btn) {
+    btn.parentNode.parentNode.remove();
+}
+
+// ---------------- 重新編號：隔離 TSF 報告列 ----------------
+function renumberMethodA() {
+    let rows = document.querySelectorAll('#methodA_Table tbody tr');
+    let count = 1;
+    rows.forEach((row) => {
+        if (row.classList.contains('tsf-report-row')) {
+            return;
+        }
+        row.cells[0].innerText = count++;
+    });
+}
+
+function calcRepeatability() {
+    let on1 = parseFloat(document.getElementById('repON1').value);
+    let on2 = parseFloat(document.getElementById('repON2').value);
+    
+    if (!isNaN(on1) && !isNaN(on2)) {
+        let avg = (on1 + on2) / 2;
+        let r_test = Math.abs(on1 - on2);
+        let r_method = 0.00834 * (125 - avg);
+        let percent = (100 * r_test / avg);
+        
+        document.getElementById('repAvg').value = avg.toFixed(2);
+        document.getElementById('repR').value = r_test.toFixed(2);
+        document.getElementById('repRm').value = r_method.toFixed(2);
+        document.getElementById('repPercent').value = percent.toFixed(2) + '%';
+        
+        let verdict = (r_test < r_method) ? "符合" : "不符合";
+        let verdictEl = document.getElementById('repVerdict');
+        verdictEl.value = verdict;
+        verdictEl.style.color = (verdict === "符合") ? "green" : "red";
+    }
+}
+
+function addRepeatabilityRecord() {
+    let date = document.getElementById('testDate').value;
+    let sample = document.getElementById('repSampleName').value || "Sample";
+    let on1 = document.getElementById('repON1').value;
+    let on2 = document.getElementById('repON2').value;
+    let avg = document.getElementById('repAvg').value;
+    let r = document.getElementById('repR').value;
+    let rm = document.getElementById('repRm').value;
+    let verdict = document.getElementById('repVerdict').value;
+    let percent = document.getElementById('repPercent').value;
+
+    if (!avg) { alert("請先輸入 ON1 與 ON2 計算數據"); return; }
+
+    let tbody = document.querySelector('#repeatabilityTable tbody');
+    let row = tbody.insertRow();
+    let idx = tbody.rows.length;
+    
+    let vColor = (verdict === "符合") ? "text-success fw-bold" : "text-danger fw-bold";
+
+    row.innerHTML = `
+        <td>${idx}</td>
+        <td>${date}</td>
+        <td>${sample}</td>
+        <td>${on1}</td>
+        <td>${on2}</td>
+        <td>${avg}</td>
+        <td>${r}</td>
+        <td>${rm}</td>
+        <td class="${vColor}">${verdict}</td>
+        <td>${percent}</td>
+        <td class="no-print"><button class="btn btn-sm btn-danger py-0" onclick="deleteRow(this); renumberRepeatability();">-</button></td>
+    `;
+}
+
+function renumberRepeatability() {
+    let rows = document.querySelectorAll('#repeatabilityTable tbody tr');
+    rows.forEach((row, index) => {
+        row.cells[0].innerText = index + 1;
+    });
+}
+
+function renderChecklist() {
+    let lines = raw_Checklist.trim().split('\n');
+    let tbody = document.getElementById('checkListBody');
+    let html = '';
+    lines.forEach((line, index) => {
+        if (index === 0) return;
+        let cols = line.split(',');
+        if (cols[0]) {
+            if (['一', '二', '三', '四'].some(x => cols[0].startsWith(x))) {
+                html += `<tr class="checklist-header"><td colspan="4">${cols[0]}</td></tr>`;
+            } else {
+                html += `<tr><td>${cols[0]}</td><td class="text-center"><input type="radio" name="chk-${index}" value="OK"></td><td class="text-center"><input type="radio" name="chk-${index}" value="NG"></td><td><input type="text" class="form-control border-0" id="note-${index}"></td></tr>`;
+            }
+        }
+    });
+    tbody.innerHTML = html;
+}
+
+// ---------------- 測驗功能 ----------------
+let currentQuestions =[];
+let quizTimerInterval;
+let quizTimeLeft = 600;
+
+function startQuiz() {
+    let name = document.getElementById('quizTakerName').value;
+    if (!name) { alert("請輸入姓名"); return; }
+    document.getElementById('quizStartScreen').style.display = 'none';
+    document.getElementById('quizMain').style.display = 'block';
+    let shuffled = quizDataRaw.sort(() => 0.5 - Math.random());
+    currentQuestions = shuffled.slice(0, 20); 
+    renderQuestions();
+    quizTimeLeft = 600;
+    updateTimer();
+    quizTimerInterval = setInterval(updateTimer, 1000);
+}
+
+function updateTimer() {
+    let m = Math.floor(quizTimeLeft / 60);
+    let s = quizTimeLeft % 60;
+    document.getElementById('quizTimer').innerText = `剩餘時間: ${m}:${s < 10 ? '0'+s : s}`;
+    if (quizTimeLeft <= 0) { submitQuiz(); }
+    quizTimeLeft--;
+}
+
+function renderQuestions() {
+    let container = document.getElementById('questionContainer');
+    let html = '';
+    currentQuestions.forEach((q, idx) => {
+        let opts = '';
+        q.o.forEach((opt, oIdx) => {
+            opts += `<div class="form-check"><input class="form-check-input" type="radio" name="q-${idx}" value="${oIdx}" id="q-${idx}-${oIdx}"><label class="form-check-label" for="q-${idx}-${oIdx}">${opt}</label></div>`;
+        });
+        html += `<div class="card mb-3 p-3 shadow-sm"><p class="fw-bold mb-2">${idx+1}. ${q.q}</p>${opts}</div>`;
+    });
+    container.innerHTML = html;
+}
+
+function submitQuiz() {
+    clearInterval(quizTimerInterval);
+    document.getElementById('quizMain').style.display = 'none';
+    document.getElementById('quizResult').style.display = 'block';
+    let score = 0;
+    let reviewHtml = '';
+    currentQuestions.forEach((q, idx) => {
+        let selected = document.querySelector(`input[name="q-${idx}"]:checked`);
+        let userAns = selected ? parseInt(selected.value) : -1;
+        if (userAns === q.a) { score += 5; } else {
+            reviewHtml += `<div class="mb-2 p-2 border rounded bg-light"><p class="text-danger fw-bold">Q${idx+1}: ${q.q}</p><p>正確: ${q.o[q.a]}</p></div>`;
+        }
+    });
+    document.getElementById('scoreDisplay').innerText = score + " 分";
+    let pf = document.getElementById('passFailDisplay');
+    if (score >= 70) {
+        pf.innerText = "合格 Pass"; pf.className = "text-success fw-bold fs-3";
+        if(document.getElementById('btnDownloadCert')) document.getElementById('btnDownloadCert').style.display = 'inline-block';
+    } else {
+        pf.innerText = "不合格 Fail"; pf.className = "text-danger fw-bold fs-3";
+        if(document.getElementById('btnDownloadCert')) document.getElementById('btnDownloadCert').style.display = 'none';
+    }
+    document.getElementById('quizReview').innerHTML = reviewHtml || "恭喜全對！";
+}
+
+function resetQuiz() {
+    document.getElementById('quizResult').style.display = 'none';
+    document.getElementById('quizStartScreen').style.display = 'block';
+    document.getElementById('quizTakerName').value = '';
+}
+function quitQuiz() { clearInterval(quizTimerInterval); resetQuiz(); }
+
+// 中英對照證書列印功能
+function printCertificateBilingual() {
+    const name = document.getElementById('quizTakerName').value;
+    const date = new Date().toLocaleDateString();
+    
+    const certHTML = `
+    <style>
+        @media print {
+            @page {
+                size: A4 landscape !important;
+                margin: 0mm !important;
+            }
+            body.print-mode { background-color: #fff !important; }
+            #printContainer {
+                display: flex !important;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                width: 100vw;
+                background-color: #fff !important;
+            }
+            .cert-wrapper {
+                width: 287mm; /* Fits inside A4 (297x210) margins */
+                height: 200mm;
+                padding: 10px;
+                background-color: #fff !important;
+                font-family: 'Microsoft JhengHei', sans-serif;
+                border: 10px solid #2c3e50 !important;
+                box-sizing: border-box;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .cert-inner {
+                border: 2px solid #aaa !important;
+                height: 100%;
+                padding: 30px;
+                box-sizing: border-box;
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+        }
+    </style>
+    <div class="cert-wrapper" style="width: 297mm; height: 210mm; padding: 10px; background-color: #fff; font-family: 'Microsoft JhengHei', sans-serif; border: 10px solid #2c3e50; box-sizing: border-box; margin: auto;">
+        <div class="cert-inner" style="border: 2px solid #aaa; height: 100%; padding: 30px; box-sizing: border-box; text-align: center; display:flex; flex-direction:column; justify-content:center;">
+            <h1 style="color: #2c3e50; font-size: 3rem; margin-bottom: 5px; font-weight: bold;">CERTIFICATE OF QUALIFICATION</h1>
+            <h2 style="color: #2c3e50; font-size: 2rem; margin-top: 0; font-weight: bold;">合格證書</h2>
+            
+            <div style="margin: 20px 0; border-bottom: 2px solid #ccc; width: 80%; margin-left: 10%;"></div>
+            
+            <h3 style="color: #555; margin-bottom: 5px; font-weight:bold;">CNS 12011 Test method for research octane number of spark-ignition engine fuel</h3>
+            <h4 style="color: #555; margin-top: 0; font-weight:bold;">CNS 12011 火花點火引擎燃料研究法辛烷值試驗法</h4>
+            
+            <p style="font-size: 1.2rem; margin-top: 20px;">This is to certify that / 茲證明</p>
+            
+            <h1 style="color: #198754; font-size: 3.5rem; margin: 10px 0; text-decoration: underline; font-weight: bold;">${name}</h1>
+            
+            <p style="font-size: 1.2rem; margin: 5px 0;">Has successfully passed the technical examination and demonstrated proficiency in the operation and protocols of the RON Engine.</p>
+            <p style="font-size: 1.2rem; margin-top: 0; color: #555;">已通過技術測驗並展現操作 RON 引擎之熟練度。</p>
+            
+            <div style="margin-top: 40px; display: flex; justify-content: space-between; align-items: flex-end; padding: 0 50px;">
+                <div style="text-align: center;">
+                    <p style="font-size: 1.2rem; border-bottom: 1px solid #000; padding-bottom: 5px; width: 200px; margin: 0 auto;">${date}</p>
+                    <p style="font-size: 1rem; color: #555;">Date / 日期</p>
+                </div>
+                <div style="text-align: center;">
+                    <p style="font-size: 1.2rem; border-bottom: 1px solid #000; padding-bottom: 5px; width: 250px; margin: 0 auto; font-weight: bold;">Laboratory Supervisor</p>
+                    <p style="font-size: 1rem; color: #555;">Laboratory Supervisor / 實驗室主管</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 30px; font-size: 0.9rem; color: #777;">
+                <p>Bureau of Standards, Metrology and Inspection, MOEA<br>經濟部標準檢驗局 新竹分局 化工產品科</p>
+            </div>
+        </div>
+    </div>
+    `;
+    
+    triggerHTMLPrint("合格證書", certHTML);
+}
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
